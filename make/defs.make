@@ -316,7 +316,6 @@ ifneq ($(OSNAME),windows)
       BUILDARCH = ppc64
     endif
   endif
-  endif
   ifeq ($(BUILDARCH), riscv)
     ifdef LP64
       BUILDARCH = riscv64
