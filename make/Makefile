@@ -243,14 +243,14 @@ else
 endif
 
 generic_buildcore: $(HOTSPOT_SCRIPT)
-ifeq ($(HS_ARCH),ppc)
+ifneq (,$(findstring $(HS_ARCH), riscv ppc))
   ifeq ($(ARCH_DATA_MODEL),64)
 	$(MKDIR) -p $(OUTPUTDIR)
 	$(CD) $(OUTPUTDIR); \
 		$(MAKE) -f $(ABS_OS_MAKEFILE) \
 			$(MAKE_ARGS) $(VM_TARGET)
   else
-	@$(ECHO) "No ($(VM_TARGET)) for ppc ARCH_DATA_MODEL=$(ARCH_DATA_MODEL)"
+	@$(ECHO) "No ($(VM_TARGET)) for $(HS_ARCH) ARCH_DATA_MODEL=$(ARCH_DATA_MODEL)"
   endif
 else
 	@$(ECHO) "No ($(VM_TARGET)) for $(HS_ARCH)"

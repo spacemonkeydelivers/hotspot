@@ -134,6 +134,7 @@ class TemplateInterpreter: public AbstractInterpreter {
   // Initialization/debugging
   static void       initialize();
   // this only returns whether a pc is within generated code for the interpreter.
+  // !!!DEBUG CONTAINS IS HERE
   static bool       contains(address pc)                        { return _code != NULL && _code->contains(pc); }
 
  public:
@@ -201,6 +202,9 @@ class TemplateInterpreter: public AbstractInterpreter {
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "templateInterpreter_ppc.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "templateInterpreter_riscv.hpp"
 #endif
 
 

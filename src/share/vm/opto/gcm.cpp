@@ -47,6 +47,8 @@
 # include "adfiles/ad_zero.hpp"
 #elif defined TARGET_ARCH_MODEL_ppc_64
 # include "adfiles/ad_ppc_64.hpp"
+#elif defined TARGET_ARCH_MODEL_riscv_64
+# include "adfiles/ad_riscv.hpp"
 #endif
 
 

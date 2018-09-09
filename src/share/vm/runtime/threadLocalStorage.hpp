@@ -72,6 +72,9 @@ class ThreadLocalStorage : AllStatic {
 #ifdef TARGET_OS_ARCH_linux_ppc
 # include "threadLS_linux_ppc.hpp"
 #endif
+#ifdef TARGET_OS_ARCH_linux_riscv
+# include "threadLS_linux_riscv.hpp"
+#endif
 #ifdef TARGET_OS_ARCH_aix_ppc
 # include "threadLS_aix_ppc.hpp"
 #endif

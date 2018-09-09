@@ -307,6 +307,7 @@ LINK_VM = $(LINK_LIB.CC)
 # rule for building precompiled header
 $(PRECOMPILED_HEADER):
 	$(QUIETLY) echo Generating precompiled header $@
+	$(QUIETLY) echo $(EXTRA_CFLAGS)
 	$(QUIETLY) mkdir -p $(PRECOMPILED_HEADER_DIR)
 	$(QUIETLY) $(COMPILE.CXX) $(DEPFLAGS) -x c++-header $(PRECOMPILED_HEADER_SRC) -o $@ $(COMPILE_DONE)
 

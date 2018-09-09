@@ -39,7 +39,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "jni_ppc.h"
 #endif
-
+#ifdef TARGET_ARCH_riscv
+# include "jni_riscv.h"
+#endif
 
 /*
   The local copies of JNI header files may be refreshed

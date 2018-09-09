@@ -306,6 +306,7 @@ void Universe::genesis(TRAPS) {
     _the_null_string            = StringTable::intern("null", CHECK);
     _the_min_jint_string       = StringTable::intern("-2147483648", CHECK);
 
+
     if (UseSharedSpaces) {
       // Verify shared interfaces array.
       assert(_the_array_interfaces_array->at(0) ==
@@ -834,7 +835,6 @@ jint Universe::initialize_heap() {
       gc_policy = new MarkSweepPolicy();
     }
     gc_policy->initialize_all();
-
     Universe::_collectedHeap = new GenCollectedHeap(gc_policy);
   }
 

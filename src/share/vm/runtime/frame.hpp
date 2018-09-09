@@ -43,6 +43,8 @@
 # include "adfiles/adGlobals_zero.hpp"
 #elif defined TARGET_ARCH_MODEL_ppc_64
 # include "adfiles/adGlobals_ppc_64.hpp"
+#elif defined TARGET_ARCH_MODEL_riscv_64
+# include "adfiles/adGlobals_riscv.hpp"
 #endif
 #endif // COMPILER2
 #ifdef TARGET_ARCH_zero
@@ -496,6 +498,9 @@ class frame VALUE_OBJ_CLASS_SPEC {
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "frame_ppc.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "frame_riscv.hpp"
 #endif
 
 };

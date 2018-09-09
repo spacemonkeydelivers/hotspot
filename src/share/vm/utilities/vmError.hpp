@@ -85,21 +85,21 @@ class VMError : public StackObj {
   // generate an error report
   void report(outputStream* st);
 
-  // generate a stack trace
-  static void print_stack_trace(outputStream* st, JavaThread* jt,
-                                char* buf, int buflen, bool verbose = false);
-
-  // accessor
+    // accessor
   const char* message() const    { return _message; }
   const char* detail_msg() const { return _detail_msg; }
   bool should_report_bug(unsigned int id) {
     return (id != OOM_MALLOC_ERROR) && (id != OOM_MMAP_ERROR);
   }
 
-  static fdStream out;
   static fdStream log; // error log used by VMError::report_and_die()
 
 public:
+  // TODO: Put this back as private
+  // generate a stack trace
+  static fdStream out;
+  static void print_stack_trace(outputStream* st, JavaThread* jt,
+                                char* buf, int buflen, bool verbose = false);
 
   // Constructor for crashes
   VMError(Thread* thread, unsigned int sig, address pc, void* siginfo,

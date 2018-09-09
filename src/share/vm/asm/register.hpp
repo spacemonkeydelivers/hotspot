@@ -108,6 +108,9 @@ const type name = ((type)name##_##type##EnumValue)
 #ifdef TARGET_ARCH_ppc
 # include "register_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "register_riscv.hpp"
+#endif
 
 
 // Debugging support

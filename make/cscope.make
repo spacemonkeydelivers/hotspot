@@ -70,7 +70,7 @@ endif
 # space-separated list identifiers to include only those CPUs.
 ifdef	CS_CPU
 CS_PRUNE_CPU	= $(patsubst %,-o -name '*%*',\
-		    $(filter-out ${CS_CPU},arm ppc sparc x86 zero))
+		    $(filter-out ${CS_CPU},arm riscv ppc sparc x86 zero))
 endif
 
 # What files should we include?  A simple rule might be just those files under

@@ -41,6 +41,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "vm_version_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "vm_version_riscv.hpp"
+#endif
 
 const char* Abstract_VM_Version::_s_vm_release = Abstract_VM_Version::vm_release();
 const char* Abstract_VM_Version::_s_internal_vm_info_string = Abstract_VM_Version::internal_vm_info_string();
@@ -189,6 +192,7 @@ const char* Abstract_VM_Version::jre_release_version() {
                  IA64_ONLY("ia64")               \
                  AMD64_ONLY("amd64")             \
                  PPC64_ONLY("ppc64")             \
+                 RISCV_ONLY("riscv")             \
                  SPARC_ONLY("sparc")
 #endif // ZERO
 #endif

@@ -101,6 +101,7 @@ jint init_globals() {
   VM_Version_init();
   os_init_globals();
   stubRoutines_init1();
+  printf("stubRoutines1\n");
   jint status = universe_init();  // dependent on codeCache_init and
                                   // stubRoutines_init1 and metaspace_init.
   if (status != JNI_OK)
@@ -113,25 +114,39 @@ jint init_globals() {
   templateTable_init();
   InterfaceSupport_init();
   SharedRuntime::generate_stubs();
+  printf("SharedRuntime\n");
   universe2_init();  // dependent on codeCache_init and stubRoutines_init1
+  printf("Universe2\n");
   referenceProcessor_init();
+  printf("refproc\n");
   jni_handles_init();
+  printf("jni_handles\n");
 #if INCLUDE_VM_STRUCTS
   vmStructs_init();
+  printf("vmStructs\n");
 #endif // INCLUDE_VM_STRUCTS
 
   vtableStubs_init();
+  printf("vtableStubs\n");
   InlineCacheBuffer_init();
+  printf("inline cache buffer\n");
   compilerOracle_init();
+  printf("compiler oracle\n");
   compilationPolicy_init();
+  printf("compilaton policy\n");
   compileBroker_init();
+  printf("compile broker\n");
   VMRegImpl::set_regName();
+  printf("vmreg names\n");
 
   if (!universe_post_init()) {
     return JNI_ERR;
   }
+  printf("universe post init\n");
   javaClasses_init();   // must happen after vtable initialization
+  printf("java classes\n");
   stubRoutines_init2(); // note: StubRoutines need 2-phase init
+  printf("stubRoutines2\n");
 
 #if INCLUDE_NMT
   // Solaris stack is walkable only after stubRoutines are set up.

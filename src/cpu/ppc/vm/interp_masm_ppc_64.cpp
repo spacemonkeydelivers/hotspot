@@ -84,7 +84,7 @@ void InterpreterMacroAssembler::dispatch_prolog(TosState state, int bcp_incr) {
 
   load_dispatch_table(R24_dispatch_addr, Interpreter::dispatch_table(state));
 
-  sldi(bytecode, bytecode, LogBytesPerWord);
+  slli(bytecode, bytecode, LogBytesPerWord);
   ldx(R24_dispatch_addr, R24_dispatch_addr, bytecode);
 }
 

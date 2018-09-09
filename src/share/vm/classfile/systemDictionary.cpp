@@ -1838,6 +1838,7 @@ void SystemDictionary::initialize(TRAPS) {
 
   // Allocate private object used as system class loader lock
   _system_loader_lock_obj = oopFactory::new_intArray(0, CHECK);
+
   // Initialize basic classes
   initialize_preloaded_classes(CHECK);
 }

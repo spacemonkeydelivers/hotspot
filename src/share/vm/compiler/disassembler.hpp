@@ -93,6 +93,9 @@ class Disassembler {
 #ifdef TARGET_ARCH_ppc
 # include "disassembler_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "disassembler_riscv.hpp"
+#endif
 
 
  public:
@@ -101,6 +104,8 @@ class Disassembler {
            (_decode_instructions != NULL) ||
            load_library();
   }
+  //TODO: Get rid of this; it's only for RISC-V testing...
+  static void print_dasm(address begin, address end, outputStream* st = NULL);
   static void decode(CodeBlob *cb,               outputStream* st = NULL);
   static void decode(nmethod* nm,                outputStream* st = NULL);
   static void decode(address begin, address end, outputStream* st = NULL, CodeStrings c = CodeStrings());

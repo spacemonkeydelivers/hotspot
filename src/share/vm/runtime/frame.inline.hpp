@@ -46,6 +46,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "jniTypes_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "jniTypes_riscv.hpp"
+#endif
 #ifdef TARGET_ARCH_zero
 # include "entryFrame_zero.hpp"
 # include "fakeStubFrame_zero.hpp"
@@ -108,6 +111,9 @@ inline oop* frame::interpreter_frame_temp_oop_addr() const {
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "frame_ppc.inline.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "frame_riscv.inline.hpp"
 #endif
 
 

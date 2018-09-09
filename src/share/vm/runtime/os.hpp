@@ -868,6 +868,9 @@ class os: AllStatic {
 #ifdef TARGET_OS_ARCH_linux_ppc
 # include "os_linux_ppc.hpp"
 #endif
+#ifdef TARGET_OS_ARCH_linux_riscv
+# include "os_linux_riscv.hpp"
+#endif
 #ifdef TARGET_OS_ARCH_aix_ppc
 # include "os_aix_ppc.hpp"
 #endif
@@ -877,6 +880,7 @@ class os: AllStatic {
 #ifdef TARGET_OS_ARCH_bsd_zero
 # include "os_bsd_zero.hpp"
 #endif
+
 
  public:
 #ifndef PLATFORM_PRINT_NATIVE_STACK

@@ -47,6 +47,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "depChecker_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "depChecker_riscv.hpp"
+#endif
 #ifdef SHARK
 #include "shark/sharkEntry.hpp"
 #endif
@@ -493,22 +496,39 @@ address decode_env::decode_instructions(address start, address end) {
                                           options());
 }
 
+//TODO: Get rid of this; it's only for RISC-V testing...
+void Disassembler::print_dasm(address start, address end, outputStream* st) {
+  assert(((((intptr_t)start | (intptr_t)end) % Disassembler::pd_instruction_alignment()) == 0), "misaligned insn addr");
+  outputStream* _output = st ? st : tty;
+  for(uintptr_t curr = (uintptr_t) start; curr < (uintptr_t) end; curr += 4) {
+    _output->print_cr("DASM(%08X)", *((uint32_t*) curr));
+  }
+}
 
 void Disassembler::decode(CodeBlob* cb, outputStream* st) {
-  if (!load_library())  return;
+  if (!load_library()) {
+    print_dasm(cb->code_begin(), cb->code_end(), st);
+    return;
+  }
   decode_env env(cb, st);
   env.output()->print_cr("Decoding CodeBlob " PTR_FORMAT, cb);
   env.decode_instructions(cb->code_begin(), cb->code_end());
 }
 
 void Disassembler::decode(address start, address end, outputStream* st, CodeStrings c) {
-  if (!load_library())  return;
+  if (!load_library()) {
+    print_dasm(start, end, st);
+    return;
+  }
   decode_env env(CodeCache::find_blob_unsafe(start), st, c);
   env.decode_instructions(start, end);
 }
 
 void Disassembler::decode(nmethod* nm, outputStream* st) {
-  if (!load_library())  return;
+  if (!load_library()) {
+    print_dasm(nm->code_begin(), nm->code_end(), st);
+    return;
+  }
   decode_env env(nm, st);
   env.output()->print_cr("Decoding compiled method " PTR_FORMAT ":", nm);
   env.output()->print_cr("Code:");

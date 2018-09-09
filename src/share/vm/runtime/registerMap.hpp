@@ -42,6 +42,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "register_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "register_riscv.hpp"
+#endif
 
 class JavaThread;
 
@@ -149,6 +152,9 @@ class RegisterMap : public StackObj {
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "registerMap_ppc.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "registerMap_riscv.hpp"
 #endif
 
 };

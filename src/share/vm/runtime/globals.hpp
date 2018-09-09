@@ -52,6 +52,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "globals_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "globals_riscv.hpp"
+#endif
 #ifdef TARGET_OS_FAMILY_linux
 # include "globals_linux.hpp"
 #endif
@@ -100,6 +103,9 @@
 #ifdef TARGET_OS_ARCH_bsd_zero
 # include "globals_bsd_zero.hpp"
 #endif
+#ifdef TARGET_OS_ARCH_linux_riscv
+# include "globals_linux_riscv.hpp"
+#endif
 #ifdef COMPILER1
 #ifdef TARGET_ARCH_x86
 # include "c1_globals_x86.hpp"
@@ -112,6 +118,9 @@
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "c1_globals_ppc.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "c1_globals_riscv.hpp"
 #endif
 #ifdef TARGET_OS_FAMILY_linux
 # include "c1_globals_linux.hpp"
@@ -141,6 +150,9 @@
 #endif
 #ifdef TARGET_ARCH_ppc
 # include "c2_globals_ppc.hpp"
+#endif
+#ifdef TARGET_ARCH_riscv
+# include "c2_globals_riscv.hpp"
 #endif
 #ifdef TARGET_OS_FAMILY_linux
 # include "c2_globals_linux.hpp"
@@ -1332,7 +1344,7 @@ class CommandLineFlags {
   develop(bool, TraceBytecodes, false,                                      \
           "Trace bytecode execution")                                       \
                                                                             \
-  develop(bool, TraceClassInitialization, false,                            \
+  develop(bool, TraceClassInitialization, true,                             \
           "Trace class initialization")                                     \
                                                                             \
   develop(bool, TraceExceptions, false,                                     \
@@ -1392,7 +1404,7 @@ class CommandLineFlags {
   develop(bool, TraceClearedExceptions, false,                              \
           "Print when an exception is forcibly cleared")                    \
                                                                             \
-  product(bool, TraceClassResolution, false,                                \
+  product(bool, TraceClassResolution, true,                                 \
           "Trace all constant pool resolutions (for debugging)")            \
                                                                             \
   product(bool, TraceBiasedLocking, false,                                  \

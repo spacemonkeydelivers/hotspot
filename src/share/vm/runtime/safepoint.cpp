@@ -73,6 +73,10 @@
 # include "nativeInst_ppc.hpp"
 # include "vmreg_ppc.inline.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "nativeInst_riscv.hpp"
+# include "vmreg_riscv.inline.hpp"
+#endif
 #if INCLUDE_ALL_GCS
 #include "gc_implementation/concurrentMarkSweep/concurrentMarkSweepThread.hpp"
 #include "gc_implementation/shared/suspendibleThreadSet.hpp"

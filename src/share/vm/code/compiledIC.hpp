@@ -42,6 +42,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "nativeInst_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "nativeInst_riscv.hpp"
+#endif
 
 //-----------------------------------------------------------------------------
 // The CompiledIC represents a compiled inline cache.

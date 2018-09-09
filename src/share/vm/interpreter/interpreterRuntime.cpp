@@ -71,6 +71,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "vm_version_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "vm_version_riscv.hpp"
+#endif
 #ifdef COMPILER2
 #include "opto/runtime.hpp"
 #endif
@@ -709,6 +712,11 @@ IRT_ENTRY(void, InterpreterRuntime::resolve_invoke(JavaThread* thread, Bytecodes
 
   // resolve method
   CallInfo info;
+  /*
+  printf("CONSTANT POOL ADDR FOR METHOD: %p\n", (void*) method(thread)->constants());
+  method(thread)->print_short_name();
+  method(thread)->print_codes();
+  */
   constantPoolHandle pool(thread, method(thread)->constants());
 
   {

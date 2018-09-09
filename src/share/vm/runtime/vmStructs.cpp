@@ -119,6 +119,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "vmStructs_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "vmStructs_riscv.hpp"
+#endif
 #ifdef TARGET_OS_ARCH_linux_x86
 # include "vmStructs_linux_x86.hpp"
 #endif
@@ -151,6 +154,9 @@
 #endif
 #ifdef TARGET_OS_ARCH_bsd_zero
 # include "vmStructs_bsd_zero.hpp"
+#endif
+#ifdef TARGET_OS_ARCH_linux_riscv
+# include "vmStructs_linux_riscv.hpp"
 #endif
 #if INCLUDE_ALL_GCS
 #include "gc_implementation/concurrentMarkSweep/compactibleFreeListSpace.hpp"
@@ -204,6 +210,8 @@
 # include "adfiles/adGlobals_zero.hpp"
 #elif defined TARGET_ARCH_MODEL_ppc_64
 # include "adfiles/adGlobals_ppc_64.hpp"
+#elif defined TARGET_ARCH_MODEL_riscv_64
+# include "adfiles/adGlobals_riscv.hpp"
 #endif
 #endif // COMPILER2
 

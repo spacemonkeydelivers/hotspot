@@ -42,5 +42,8 @@
 #ifdef TARGET_ARCH_ppc
 # include "assembler_ppc.inline.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "assembler_riscv.inline.hpp"
+#endif
 
 #endif // SHARE_VM_ASM_ASSEMBLER_INLINE_HPP

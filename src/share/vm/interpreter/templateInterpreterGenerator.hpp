@@ -101,6 +101,9 @@ class TemplateInterpreterGenerator: public AbstractInterpreterGenerator {
 #ifdef TARGET_ARCH_ppc
 # include "templateInterpreterGenerator_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "templateInterpreterGenerator_riscv.hpp"
+#endif
 
 
 };

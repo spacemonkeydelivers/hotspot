@@ -34,8 +34,11 @@
 #include "libproc_md.h"
 #endif
 
+#ifndef __riscv64
 #include <sys/ptrace.h>
-
+#else
+#include <asm/ptrace.h>
+#endif
 /************************************************************************************
 
 0. This is very minimal subset of Solaris libproc just enough for current application.

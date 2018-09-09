@@ -304,6 +304,9 @@ class Bytecodes: AllStatic {
 #ifdef TARGET_ARCH_ppc
 # include "bytecodes_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "bytecodes_riscv.hpp"
+#endif
 
 
     number_of_codes

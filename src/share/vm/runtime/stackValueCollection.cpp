@@ -39,6 +39,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "jniTypes_ppc.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "jniTypes_riscv.hpp"
+#endif
 
 PRAGMA_FORMAT_MUTE_WARNINGS_FOR_GCC
 

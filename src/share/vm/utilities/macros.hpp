@@ -408,6 +408,14 @@
 #define NOT_ARM32(code) code
 #endif
 
+#ifdef __riscv64
+#define RISCV_ONLY(code) code
+#define NOT_RISCV(code)
+#else
+#define RISCV_ONLY(code)
+#define NOT_RISCV(code) code
+#endif
+
 #ifdef JAVASE_EMBEDDED
 #define EMBEDDED_ONLY(code) code
 #define NOT_EMBEDDED(code)
