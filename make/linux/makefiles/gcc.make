@@ -198,7 +198,7 @@ else
 endif
 
 # Compiler warnings are treated as errors
-WARNINGS_ARE_ERRORS = -Werror
+WARNINGS_ARE_ERRORS = -w
 
 ifeq ($(USE_CLANG), true)
   # However we need to clean the code up before we can unrestrictedly enable this option with Clang
@@ -229,7 +229,7 @@ OPT_CFLAGS/SPEED=-O3
 # Hotspot uses very unstrict aliasing turn this optimization off
 # This option is added to CFLAGS rather than OPT_CFLAGS
 # so that OPT_CFLAGS overrides get this option too.
-CFLAGS += -fno-strict-aliasing 
+CFLAGS += -fno-strict-aliasing -fno-lifetime-dse -fno-delete-null-pointer-checks
 
 OPT_CFLAGS_DEFAULT ?= SPEED
 
