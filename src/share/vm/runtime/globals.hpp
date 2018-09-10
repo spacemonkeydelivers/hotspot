@@ -1344,7 +1344,7 @@ class CommandLineFlags {
   develop(bool, TraceBytecodes, false,                                      \
           "Trace bytecode execution")                                       \
                                                                             \
-  develop(bool, TraceClassInitialization, true,                             \
+  develop(bool, TraceClassInitialization, false,                            \
           "Trace class initialization")                                     \
                                                                             \
   develop(bool, TraceExceptions, false,                                     \
@@ -1404,7 +1404,7 @@ class CommandLineFlags {
   develop(bool, TraceClearedExceptions, false,                              \
           "Print when an exception is forcibly cleared")                    \
                                                                             \
-  product(bool, TraceClassResolution, true,                                 \
+  product(bool, TraceClassResolution, false,                                \
           "Trace all constant pool resolutions (for debugging)")            \
                                                                             \
   product(bool, TraceBiasedLocking, false,                                  \
