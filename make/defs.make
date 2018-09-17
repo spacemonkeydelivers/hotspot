@@ -285,7 +285,7 @@ ifneq ($(OSNAME),windows)
 
   # Use uname output for SRCARCH, but deal with platform differences. If ARCH
   # is not explicitly listed below, it is treated as x86.
-  SRCARCH     ?= $(ARCH/$(filter sparc sparc64 ia64 amd64 x86_64 ppc ppc64 riscv64 zero,$(ARCH)))
+  SRCARCH     ?= $(ARCH/$(filter sparc sparc64 ia64 amd64 x86_64 ppc ppc64 riscv zero,$(ARCH)))
   ARCH/        = x86
   ARCH/sparc   = sparc
   ARCH/sparc64 = sparc
@@ -295,7 +295,7 @@ ifneq ($(OSNAME),windows)
   ARCH/ppc64   = ppc
   ARCH/ppc     = ppc
   ARCH/zero    = zero
-  ARCH/riscv64 = riscv64
+  ARCH/riscv   = riscv
 
   # BUILDARCH is usually the same as SRCARCH, except for sparcv9
   BUILDARCH ?= $(SRCARCH)

@@ -178,7 +178,8 @@ ARCHFLAG/sparc   = -m32 -mcpu=v9
 ARCHFLAG/sparcv9 = -m64 -mcpu=v9
 ARCHFLAG/zero    = $(ZERO_ARCHFLAG)
 ARCHFLAG/ppc64   =  -m64
-ARCHFLAG/riscv64 =  -m64
+ARCHFLAG/riscv64 =
+#ARCHFLAG/riscv64 =  -m64
 
 CFLAGS     += $(ARCHFLAG)
 AOUT_FLAGS += $(ARCHFLAG)

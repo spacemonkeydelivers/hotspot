@@ -45,9 +45,9 @@ class JNITypes : AllStatic {
 
  private:
 
-#ifndef __riscv64
+#ifndef RISCV64
 #error "rv32 support currently not implemented!!!"
-#endif // __riscv64
+#endif // RISCV64
 
  public:
   // Ints are stored in native format in one JavaCallArgument slot at *to.

@@ -26,7 +26,7 @@
 #ifndef CPU_RISCV_VM_COPY_RISCV_HPP
 #define CPU_RISCV_VM_COPY_RISCV_HPP
 
-#ifndef __riscv64
+#ifndef RISCV64
 #error "copy currently only implemented for RISCV64"
 #endif
 

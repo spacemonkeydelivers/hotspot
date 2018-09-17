@@ -253,12 +253,15 @@ inline void MacroAssembler::store_heap_oop_not_null(Register d, RegisterOrConsta
 }
 
 inline void MacroAssembler::load_heap_oop(Register d, RegisterOrConstant offs, Register s1) {
+  unimplemented(__func__);
+  /*
   if (UseCompressedOops) {
     lwu(d, offs, s1);
     decode_heap_oop(d);
   } else {
     ld(d, offs, s1);
   }
+  */
 }
 
 inline Register MacroAssembler::encode_heap_oop_not_null(Register d, Register src) {

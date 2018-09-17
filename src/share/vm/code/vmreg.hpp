@@ -45,7 +45,7 @@
 #elif defined TARGET_ARCH_MODEL_ppc_64
 # include "adfiles/adGlobals_ppc_64.hpp"
 #elif defined TARGET_ARCH_MODEL_riscv_64
-# include "adfiles/adGlobals_riscv.hpp"
+# include "adfiles/adGlobals_riscv_64.hpp"
 #endif
 #endif
 

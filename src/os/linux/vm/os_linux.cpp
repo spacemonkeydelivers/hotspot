@@ -2002,11 +2002,11 @@ void * os::dll_load(const char *filename, char *ebuf, int ebuflen)
     static  Elf32_Half running_arch_code=EM_MIPS;
   #elif  (defined M68K)
     static  Elf32_Half running_arch_code=EM_68K;
-  #elif  (defined __riscv64)
+  #elif  (defined RISCV64)
     static  Elf32_Half running_arch_code=EM_RISCV64;
   #else
     #error Method os::dll_load requires that one of following is defined:\
-         IA32, AMD64, IA64, __sparc, __powerpc__, ARM, S390, ALPHA, MIPS, MIPSEL, PARISC, M68K, __riscv64
+         IA32, AMD64, IA64, __sparc, __powerpc__, ARM, S390, ALPHA, MIPS, MIPSEL, PARISC, M68K, RISCV64
   #endif
 
   // Identify compatability class for VM's architecture and library's architecture

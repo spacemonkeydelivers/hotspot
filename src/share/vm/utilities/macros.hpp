@@ -408,7 +408,7 @@
 #define NOT_ARM32(code) code
 #endif
 
-#ifdef __riscv64
+#ifdef RISCV64
 #define RISCV_ONLY(code) code
 #define NOT_RISCV(code)
 #else

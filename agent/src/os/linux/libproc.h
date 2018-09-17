@@ -34,7 +34,7 @@
 #include "libproc_md.h"
 #endif
 
-#ifndef __riscv64
+#ifndef RISCV64
 #include <sys/ptrace.h>
 #else
 #include <asm/ptrace.h>
