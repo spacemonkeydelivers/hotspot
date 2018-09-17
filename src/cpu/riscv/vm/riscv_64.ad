@@ -79,70 +79,70 @@ register %{
   // PPC64 has 32 64-bit integer registers.
 
   // types: v = volatile, nv = non-volatile, s = system
-  reg_def R0   ( SOC, SOC, Op_RegI,  0, R0->as_VMReg()         );  // v   used in prologs
-  reg_def R0_H ( SOC, SOC, Op_RegI, 99, R0->as_VMReg()->next() );
-  reg_def R1   ( NS,  NS,  Op_RegI,  1, R1->as_VMReg()         );  // s   SP
-  reg_def R1_H ( NS,  NS,  Op_RegI, 99, R1->as_VMReg()->next() );
-  reg_def R2   ( SOC, SOC, Op_RegI,  2, R2->as_VMReg()         );  // v   TOC
-  reg_def R2_H ( SOC, SOC, Op_RegI, 99, R2->as_VMReg()->next() );
-  reg_def R3   ( SOC, SOC, Op_RegI,  3, R3->as_VMReg()         );  // v   iarg1 & iret
-  reg_def R3_H ( SOC, SOC, Op_RegI, 99, R3->as_VMReg()->next() );
-  reg_def R4   ( SOC, SOC, Op_RegI,  4, R4->as_VMReg()         );  //     iarg2
-  reg_def R4_H ( SOC, SOC, Op_RegI, 99, R4->as_VMReg()->next() );
-  reg_def R5   ( SOC, SOC, Op_RegI,  5, R5->as_VMReg()         );  // v   iarg3
-  reg_def R5_H ( SOC, SOC, Op_RegI, 99, R5->as_VMReg()->next() );
-  reg_def R6   ( SOC, SOC, Op_RegI,  6, R6->as_VMReg()         );  // v   iarg4
-  reg_def R6_H ( SOC, SOC, Op_RegI, 99, R6->as_VMReg()->next() );
-  reg_def R7   ( SOC, SOC, Op_RegI,  7, R7->as_VMReg()         );  // v   iarg5
-  reg_def R7_H ( SOC, SOC, Op_RegI, 99, R7->as_VMReg()->next() );
-  reg_def R8   ( SOC, SOC, Op_RegI,  8, R8->as_VMReg()         );  // v   iarg6
-  reg_def R8_H ( SOC, SOC, Op_RegI, 99, R8->as_VMReg()->next() );
-  reg_def R9   ( SOC, SOC, Op_RegI,  9, R9->as_VMReg()         );  // v   iarg7
-  reg_def R9_H ( SOC, SOC, Op_RegI, 99, R9->as_VMReg()->next() );
-  reg_def R10  ( SOC, SOC, Op_RegI, 10, R10->as_VMReg()        );  // v   iarg8
-  reg_def R10_H( SOC, SOC, Op_RegI, 99, R10->as_VMReg()->next());
-  reg_def R11  ( SOC, SOC, Op_RegI, 11, R11->as_VMReg()        );  // v   ENV / scratch
-  reg_def R11_H( SOC, SOC, Op_RegI, 99, R11->as_VMReg()->next());
-  reg_def R12  ( SOC, SOC, Op_RegI, 12, R12->as_VMReg()        );  // v   scratch
-  reg_def R12_H( SOC, SOC, Op_RegI, 99, R12->as_VMReg()->next());
-  reg_def R13  ( NS,  NS,  Op_RegI, 13, R13->as_VMReg()        );  // s   system thread id
-  reg_def R13_H( NS,  NS,  Op_RegI, 99, R13->as_VMReg()->next());
-  reg_def R14  ( SOC, SOE, Op_RegI, 14, R14->as_VMReg()        );  // nv
-  reg_def R14_H( SOC, SOE, Op_RegI, 99, R14->as_VMReg()->next());
-  reg_def R15  ( SOC, SOE, Op_RegI, 15, R15->as_VMReg()        );  // nv
-  reg_def R15_H( SOC, SOE, Op_RegI, 99, R15->as_VMReg()->next());
-  reg_def R16  ( SOC, SOE, Op_RegI, 16, R16->as_VMReg()        );  // nv
-  reg_def R16_H( SOC, SOE, Op_RegI, 99, R16->as_VMReg()->next());
-  reg_def R17  ( SOC, SOE, Op_RegI, 17, R17->as_VMReg()        );  // nv
-  reg_def R17_H( SOC, SOE, Op_RegI, 99, R17->as_VMReg()->next());
-  reg_def R18  ( SOC, SOE, Op_RegI, 18, R18->as_VMReg()        );  // nv
-  reg_def R18_H( SOC, SOE, Op_RegI, 99, R18->as_VMReg()->next());
-  reg_def R19  ( SOC, SOE, Op_RegI, 19, R19->as_VMReg()        );  // nv
-  reg_def R19_H( SOC, SOE, Op_RegI, 99, R19->as_VMReg()->next());
-  reg_def R20  ( SOC, SOE, Op_RegI, 20, R20->as_VMReg()        );  // nv
-  reg_def R20_H( SOC, SOE, Op_RegI, 99, R20->as_VMReg()->next());
-  reg_def R21  ( SOC, SOE, Op_RegI, 21, R21->as_VMReg()        );  // nv
-  reg_def R21_H( SOC, SOE, Op_RegI, 99, R21->as_VMReg()->next());
-  reg_def R22  ( SOC, SOE, Op_RegI, 22, R22->as_VMReg()        );  // nv
-  reg_def R22_H( SOC, SOE, Op_RegI, 99, R22->as_VMReg()->next());
-  reg_def R23  ( SOC, SOE, Op_RegI, 23, R23->as_VMReg()        );  // nv
-  reg_def R23_H( SOC, SOE, Op_RegI, 99, R23->as_VMReg()->next());
-  reg_def R24  ( SOC, SOE, Op_RegI, 24, R24->as_VMReg()        );  // nv
-  reg_def R24_H( SOC, SOE, Op_RegI, 99, R24->as_VMReg()->next());
-  reg_def R25  ( SOC, SOE, Op_RegI, 25, R25->as_VMReg()        );  // nv
-  reg_def R25_H( SOC, SOE, Op_RegI, 99, R25->as_VMReg()->next());
-  reg_def R26  ( SOC, SOE, Op_RegI, 26, R26->as_VMReg()        );  // nv
-  reg_def R26_H( SOC, SOE, Op_RegI, 99, R26->as_VMReg()->next());
-  reg_def R27  ( SOC, SOE, Op_RegI, 27, R27->as_VMReg()        );  // nv
-  reg_def R27_H( SOC, SOE, Op_RegI, 99, R27->as_VMReg()->next());
-  reg_def R28  ( SOC, SOE, Op_RegI, 28, R28->as_VMReg()        );  // nv
-  reg_def R28_H( SOC, SOE, Op_RegI, 99, R28->as_VMReg()->next());
-  reg_def R29  ( SOC, SOE, Op_RegI, 29, R29->as_VMReg()        );  // nv
-  reg_def R29_H( SOC, SOE, Op_RegI, 99, R29->as_VMReg()->next());
-  reg_def R30  ( SOC, SOE, Op_RegI, 30, R30->as_VMReg()        );  // nv
-  reg_def R30_H( SOC, SOE, Op_RegI, 99, R30->as_VMReg()->next());
-  reg_def R31  ( SOC, SOE, Op_RegI, 31, R31->as_VMReg()        );  // nv
-  reg_def R31_H( SOC, SOE, Op_RegI, 99, R31->as_VMReg()->next());
+  reg_def X0   ( SOC, SOC, Op_RegI,  0, X0->as_VMReg()         );  // v   used in prologs
+  reg_def X0_H ( SOC, SOC, Op_RegI, 99, X0->as_VMReg()->next() );
+  reg_def X1   ( NS,  NS,  Op_RegI,  1, X1->as_VMReg()         );  // s   SP
+  reg_def X1_H ( NS,  NS,  Op_RegI, 99, X1->as_VMReg()->next() );
+  reg_def X2   ( SOC, SOC, Op_RegI,  2, X2->as_VMReg()         );  // v   TOC
+  reg_def X2_H ( SOC, SOC, Op_RegI, 99, X2->as_VMReg()->next() );
+  reg_def X3   ( SOC, SOC, Op_RegI,  3, X3->as_VMReg()         );  // v   iarg1 & iret
+  reg_def X3_H ( SOC, SOC, Op_RegI, 99, X3->as_VMReg()->next() );
+  reg_def X4   ( SOC, SOC, Op_RegI,  4, X4->as_VMReg()         );  //     iarg2
+  reg_def X4_H ( SOC, SOC, Op_RegI, 99, X4->as_VMReg()->next() );
+  reg_def X5   ( SOC, SOC, Op_RegI,  5, X5->as_VMReg()         );  // v   iarg3
+  reg_def X5_H ( SOC, SOC, Op_RegI, 99, X5->as_VMReg()->next() );
+  reg_def X6   ( SOC, SOC, Op_RegI,  6, X6->as_VMReg()         );  // v   iarg4
+  reg_def X6_H ( SOC, SOC, Op_RegI, 99, X6->as_VMReg()->next() );
+  reg_def X7   ( SOC, SOC, Op_RegI,  7, X7->as_VMReg()         );  // v   iarg5
+  reg_def X7_H ( SOC, SOC, Op_RegI, 99, X7->as_VMReg()->next() );
+  reg_def X8   ( SOC, SOC, Op_RegI,  8, X8->as_VMReg()         );  // v   iarg6
+  reg_def X8_H ( SOC, SOC, Op_RegI, 99, X8->as_VMReg()->next() );
+  reg_def X9   ( SOC, SOC, Op_RegI,  9, X9->as_VMReg()         );  // v   iarg7
+  reg_def X9_H ( SOC, SOC, Op_RegI, 99, X9->as_VMReg()->next() );
+  reg_def X10  ( SOC, SOC, Op_RegI, 10, X10->as_VMReg()        );  // v   iarg8
+  reg_def X10_H( SOC, SOC, Op_RegI, 99, X10->as_VMReg()->next());
+  reg_def X11  ( SOC, SOC, Op_RegI, 11, X11->as_VMReg()        );  // v   ENV / scratch
+  reg_def X11_H( SOC, SOC, Op_RegI, 99, X11->as_VMReg()->next());
+  reg_def X12  ( SOC, SOC, Op_RegI, 12, X12->as_VMReg()        );  // v   scratch
+  reg_def X12_H( SOC, SOC, Op_RegI, 99, X12->as_VMReg()->next());
+  reg_def X13  ( NS,  NS,  Op_RegI, 13, X13->as_VMReg()        );  // s   system thread id
+  reg_def X13_H( NS,  NS,  Op_RegI, 99, X13->as_VMReg()->next());
+  reg_def X14  ( SOC, SOE, Op_RegI, 14, X14->as_VMReg()        );  // nv
+  reg_def X14_H( SOC, SOE, Op_RegI, 99, X14->as_VMReg()->next());
+  reg_def X15  ( SOC, SOE, Op_RegI, 15, X15->as_VMReg()        );  // nv
+  reg_def X15_H( SOC, SOE, Op_RegI, 99, X15->as_VMReg()->next());
+  reg_def X16  ( SOC, SOE, Op_RegI, 16, X16->as_VMReg()        );  // nv
+  reg_def X16_H( SOC, SOE, Op_RegI, 99, X16->as_VMReg()->next());
+  reg_def X17  ( SOC, SOE, Op_RegI, 17, X17->as_VMReg()        );  // nv
+  reg_def X17_H( SOC, SOE, Op_RegI, 99, X17->as_VMReg()->next());
+  reg_def X18  ( SOC, SOE, Op_RegI, 18, X18->as_VMReg()        );  // nv
+  reg_def X18_H( SOC, SOE, Op_RegI, 99, X18->as_VMReg()->next());
+  reg_def X19  ( SOC, SOE, Op_RegI, 19, X19->as_VMReg()        );  // nv
+  reg_def X19_H( SOC, SOE, Op_RegI, 99, X19->as_VMReg()->next());
+  reg_def X20  ( SOC, SOE, Op_RegI, 20, X20->as_VMReg()        );  // nv
+  reg_def X20_H( SOC, SOE, Op_RegI, 99, X20->as_VMReg()->next());
+  reg_def X21  ( SOC, SOE, Op_RegI, 21, X21->as_VMReg()        );  // nv
+  reg_def X21_H( SOC, SOE, Op_RegI, 99, X21->as_VMReg()->next());
+  reg_def X22  ( SOC, SOE, Op_RegI, 22, X22->as_VMReg()        );  // nv
+  reg_def X22_H( SOC, SOE, Op_RegI, 99, X22->as_VMReg()->next());
+  reg_def X23  ( SOC, SOE, Op_RegI, 23, X23->as_VMReg()        );  // nv
+  reg_def X23_H( SOC, SOE, Op_RegI, 99, X23->as_VMReg()->next());
+  reg_def X24  ( SOC, SOE, Op_RegI, 24, X24->as_VMReg()        );  // nv
+  reg_def X24_H( SOC, SOE, Op_RegI, 99, X24->as_VMReg()->next());
+  reg_def X25  ( SOC, SOE, Op_RegI, 25, X25->as_VMReg()        );  // nv
+  reg_def X25_H( SOC, SOE, Op_RegI, 99, X25->as_VMReg()->next());
+  reg_def X26  ( SOC, SOE, Op_RegI, 26, X26->as_VMReg()        );  // nv
+  reg_def X26_H( SOC, SOE, Op_RegI, 99, X26->as_VMReg()->next());
+  reg_def X27  ( SOC, SOE, Op_RegI, 27, X27->as_VMReg()        );  // nv
+  reg_def X27_H( SOC, SOE, Op_RegI, 99, X27->as_VMReg()->next());
+  reg_def X28  ( SOC, SOE, Op_RegI, 28, X28->as_VMReg()        );  // nv
+  reg_def X28_H( SOC, SOE, Op_RegI, 99, X28->as_VMReg()->next());
+  reg_def X29  ( SOC, SOE, Op_RegI, 29, X29->as_VMReg()        );  // nv
+  reg_def X29_H( SOC, SOE, Op_RegI, 99, X29->as_VMReg()->next());
+  reg_def X30  ( SOC, SOE, Op_RegI, 30, X30->as_VMReg()        );  // nv
+  reg_def X30_H( SOC, SOE, Op_RegI, 99, X30->as_VMReg()->next());
+  reg_def X31  ( SOC, SOE, Op_RegI, 31, X31->as_VMReg()        );  // nv
+  reg_def X31_H( SOC, SOE, Op_RegI, 99, X31->as_VMReg()->next());
 
 
 // ----------------------------
@@ -285,44 +285,44 @@ alloc_class chunk0 (
   // Chunk0 contains *all* 64 integer registers halves.
 
   // "non-volatile" registers
-  R14, R14_H,
-  R15, R15_H,
-  R17, R17_H,
-  R18, R18_H,
-  R19, R19_H,
-  R20, R20_H,
-  R21, R21_H,
-  R22, R22_H,
-  R23, R23_H,
-  R24, R24_H,
-  R25, R25_H,
-  R26, R26_H,
-  R27, R27_H,
-  R28, R28_H,
-  R29, R29_H,
-  R30, R30_H,
-  R31, R31_H,
+  X14, X14_H,
+  X15, X15_H,
+  X17, X17_H,
+  X18, X18_H,
+  X19, X19_H,
+  X20, X20_H,
+  X21, X21_H,
+  X22, X22_H,
+  X23, X23_H,
+  X24, X24_H,
+  X25, X25_H,
+  X26, X26_H,
+  X27, X27_H,
+  X28, X28_H,
+  X29, X29_H,
+  X30, X30_H,
+  X31, X31_H,
 
   // scratch/special registers
-  R11, R11_H,
-  R12, R12_H,
+  X11, X11_H,
+  X12, X12_H,
 
   // argument registers
-  R10, R10_H,
-  R9,  R9_H,
-  R8,  R8_H,
-  R7,  R7_H,
-  R6,  R6_H,
-  R5,  R5_H,
-  R4,  R4_H,
-  R3,  R3_H,
+  X10, X10_H,
+  X9,  X9_H,
+  X8,  X8_H,
+  X7,  X7_H,
+  X6,  X6_H,
+  X5,  X5_H,
+  X4,  X4_H,
+  X3,  X3_H,
 
   // special registers, not available for allocation
-  R16, R16_H,     // R16_thread
-  R13, R13_H,     // system thread id
-  R2,  R2_H,      // may be used for TOC
-  R1,  R1_H,      // SP
-  R0,  R0_H       // R0 (scratch)
+  X16, X16_H,     // X16_thread
+  X13, X13_H,     // system thread id
+  X2,  X2_H,      // may be used for TOC
+  X1,  X1_H,      // SP
+  X0,  X0_H       // X0 (scratch)
 );
 
 // If you change this allocation class, please have a look at the
@@ -418,331 +418,331 @@ alloc_class chunk3 (
 // 32 bit registers that can be read and written i.e. these registers
 // can be dest (or src) of normal instructions.
 reg_class bits32_reg_rw(
-/*R0*/              // R0
-/*R1*/              // SP
-  R2,               // TOC
-  R3,
-  R4,
-  R5,
-  R6,
-  R7,
-  R8,
-  R9,
-  R10,
-  R11,
-  R12,
-/*R13*/             // system thread id
-  R14,
-  R15,
-/*R16*/             // R16_thread
-  R17,
-  R18,
-  R19,
-  R20,
-  R21,
-  R22,
-  R23,
-  R24,
-  R25,
-  R26,
-  R27,
-  R28,
-/*R29*/             // global TOC
-/*R30*/             // Narrow Oop Base
-  R31
+/*X0*/              // X0
+/*X1*/              // SP
+  X2,               // TOC
+  X3,
+  X4,
+  X5,
+  X6,
+  X7,
+  X8,
+  X9,
+  X10,
+  X11,
+  X12,
+/*X13*/             // system thread id
+  X14,
+  X15,
+/*X16*/             // X16_thread
+  X17,
+  X18,
+  X19,
+  X20,
+  X21,
+  X22,
+  X23,
+  X24,
+  X25,
+  X26,
+  X27,
+  X28,
+/*X29*/             // global TOC
+/*X30*/             // Narrow Oop Base
+  X31
 );
 
 // 32 bit registers that can only be read i.e. these registers can
 // only be src of all instructions.
 reg_class bits32_reg_ro(
-/*R0*/              // R0
-/*R1*/              // SP
-  R2                // TOC
-  R3,
-  R4,
-  R5,
-  R6,
-  R7,
-  R8,
-  R9,
-  R10,
-  R11,
-  R12,
-/*R13*/             // system thread id
-  R14,
-  R15,
-/*R16*/             // R16_thread
-  R17,
-  R18,
-  R19,
-  R20,
-  R21,
-  R22,
-  R23,
-  R24,
-  R25,
-  R26,
-  R27,
-  R28,
-/*R29*/
-/*R30*/             // Narrow Oop Base
-  R31
+/*X0*/              // X0
+/*X1*/              // SP
+  X2                // TOC
+  X3,
+  X4,
+  X5,
+  X6,
+  X7,
+  X8,
+  X9,
+  X10,
+  X11,
+  X12,
+/*X13*/             // system thread id
+  X14,
+  X15,
+/*X16*/             // X16_thread
+  X17,
+  X18,
+  X19,
+  X20,
+  X21,
+  X22,
+  X23,
+  X24,
+  X25,
+  X26,
+  X27,
+  X28,
+/*X29*/
+/*X30*/             // Narrow Oop Base
+  X31
 );
 
 // Complement-required-in-pipeline operands for narrow oops.
 reg_class bits32_reg_ro_not_complement (
-/*R0*/     // R0
-  R1,      // SP
-  R2,      // TOC
-  R3,
-  R4,
-  R5,
-  R6,
-  R7,
-  R8,
-  R9,
-  R10,
-  R11,
-  R12,
-/*R13,*/   // system thread id
-  R14,
-  R15,
-  R16,    // R16_thread
-  R17,
-  R18,
-  R19,
-  R20,
-  R21,
-  R22,
-/*R23,
-  R24,
-  R25,
-  R26,
-  R27,
-  R28,*/
-/*R29,*/ // TODO: let allocator handle TOC!!
-/*R30,*/
-  R31
+/*X0*/     // X0
+  X1,      // SP
+  X2,      // TOC
+  X3,
+  X4,
+  X5,
+  X6,
+  X7,
+  X8,
+  X9,
+  X10,
+  X11,
+  X12,
+/*X13,*/   // system thread id
+  X14,
+  X15,
+  X16,    // X16_thread
+  X17,
+  X18,
+  X19,
+  X20,
+  X21,
+  X22,
+/*X23,
+  X24,
+  X25,
+  X26,
+  X27,
+  X28,*/
+/*X29,*/ // TODO: let allocator handle TOC!!
+/*X30,*/
+  X31
 );
 
 // Complement-required-in-pipeline operands for narrow oops.
 // See 64-bit declaration.
 reg_class bits32_reg_ro_complement (
-  R23,
-  R24,
-  R25,
-  R26,
-  R27,
-  R28
+  X23,
+  X24,
+  X25,
+  X26,
+  X27,
+  X28
 );
 
-reg_class rscratch1_bits32_reg(R11);
-reg_class rscratch2_bits32_reg(R12);
-reg_class rarg1_bits32_reg(R3);
-reg_class rarg2_bits32_reg(R4);
-reg_class rarg3_bits32_reg(R5);
-reg_class rarg4_bits32_reg(R6);
+reg_class rscratch1_bits32_reg(X11);
+reg_class rscratch2_bits32_reg(X12);
+reg_class rarg1_bits32_reg(X3);
+reg_class rarg2_bits32_reg(X4);
+reg_class rarg3_bits32_reg(X5);
+reg_class rarg4_bits32_reg(X6);
 
 // ----------------------------
 // 64 Bit Register Classes
 // ----------------------------
 // 64-bit build means 64-bit pointers means hi/lo pairs
 
-reg_class rscratch1_bits64_reg(R11_H, R11);
-reg_class rscratch2_bits64_reg(R12_H, R12);
-reg_class rarg1_bits64_reg(R3_H, R3);
-reg_class rarg2_bits64_reg(R4_H, R4);
-reg_class rarg3_bits64_reg(R5_H, R5);
-reg_class rarg4_bits64_reg(R6_H, R6);
+reg_class rscratch1_bits64_reg(X11_H, X11);
+reg_class rscratch2_bits64_reg(X12_H, X12);
+reg_class rarg1_bits64_reg(X3_H, X3);
+reg_class rarg2_bits64_reg(X4_H, X4);
+reg_class rarg3_bits64_reg(X5_H, X5);
+reg_class rarg4_bits64_reg(X6_H, X6);
 // Thread register, 'written' by tlsLoadP, see there.
-reg_class thread_bits64_reg(R16_H, R16);
+reg_class thread_bits64_reg(X16_H, X16);
 
-reg_class r19_bits64_reg(R19_H, R19);
+reg_class r19_bits64_reg(X19_H, X19);
 
 // 64 bit registers that can be read and written i.e. these registers
 // can be dest (or src) of normal instructions.
 reg_class bits64_reg_rw(
-/*R0_H,  R0*/     // R0
-/*R1_H,  R1*/     // SP
-  R2_H,  R2,      // TOC
-  R3_H,  R3,
-  R4_H,  R4,
-  R5_H,  R5,
-  R6_H,  R6,
-  R7_H,  R7,
-  R8_H,  R8,
-  R9_H,  R9,
-  R10_H, R10,
-  R11_H, R11,
-  R12_H, R12,
-/*R13_H, R13*/   // system thread id
-  R14_H, R14,
-  R15_H, R15,
-/*R16_H, R16*/   // R16_thread
-  R17_H, R17,
-  R18_H, R18,
-  R19_H, R19,
-  R20_H, R20,
-  R21_H, R21,
-  R22_H, R22,
-  R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28,
-/*R29_H, R29*/
-/*R30_H, R30*/
-  R31_H, R31
+/*X0_H,  X0*/     // X0
+/*X1_H,  X1*/     // SP
+  X2_H,  X2,      // TOC
+  X3_H,  X3,
+  X4_H,  X4,
+  X5_H,  X5,
+  X6_H,  X6,
+  X7_H,  X7,
+  X8_H,  X8,
+  X9_H,  X9,
+  X10_H, X10,
+  X11_H, X11,
+  X12_H, X12,
+/*X13_H, X13*/   // system thread id
+  X14_H, X14,
+  X15_H, X15,
+/*X16_H, X16*/   // X16_thread
+  X17_H, X17,
+  X18_H, X18,
+  X19_H, X19,
+  X20_H, X20,
+  X21_H, X21,
+  X22_H, X22,
+  X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28,
+/*X29_H, X29*/
+/*X30_H, X30*/
+  X31_H, X31
 );
 
 // 64 bit registers used excluding r2, r11 and r12
 // Used to hold the TOC to avoid collisions with expanded LeafCall which uses
 // r2, r11 and r12 internally.
 reg_class bits64_reg_leaf_call(
-/*R0_H,  R0*/     // R0
-/*R1_H,  R1*/     // SP
-/*R2_H,  R2*/     // TOC
-  R3_H,  R3,
-  R4_H,  R4,
-  R5_H,  R5,
-  R6_H,  R6,
-  R7_H,  R7,
-  R8_H,  R8,
-  R9_H,  R9,
-  R10_H, R10,
-/*R11_H, R11*/
-/*R12_H, R12*/
-/*R13_H, R13*/   // system thread id
-  R14_H, R14,
-  R15_H, R15,
-/*R16_H, R16*/   // R16_thread
-  R17_H, R17,
-  R18_H, R18,
-  R19_H, R19,
-  R20_H, R20,
-  R21_H, R21,
-  R22_H, R22,
-  R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28,
-/*R29_H, R29*/
-/*R30_H, R30*/
-  R31_H, R31
+/*X0_H,  X0*/     // X0
+/*X1_H,  X1*/     // SP
+/*X2_H,  X2*/     // TOC
+  X3_H,  X3,
+  X4_H,  X4,
+  X5_H,  X5,
+  X6_H,  X6,
+  X7_H,  X7,
+  X8_H,  X8,
+  X9_H,  X9,
+  X10_H, X10,
+/*X11_H, X11*/
+/*X12_H, X12*/
+/*X13_H, X13*/   // system thread id
+  X14_H, X14,
+  X15_H, X15,
+/*X16_H, X16*/   // X16_thread
+  X17_H, X17,
+  X18_H, X18,
+  X19_H, X19,
+  X20_H, X20,
+  X21_H, X21,
+  X22_H, X22,
+  X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28,
+/*X29_H, X29*/
+/*X30_H, X30*/
+  X31_H, X31
 );
 
 // Used to hold the TOC to avoid collisions with expanded DynamicCall
 // which uses r19 as inline cache internally and expanded LeafCall which uses
 // r2, r11 and r12 internally.
 reg_class bits64_constant_table_base(
-/*R0_H,  R0*/     // R0
-/*R1_H,  R1*/     // SP
-/*R2_H,  R2*/     // TOC
-  R3_H,  R3,
-  R4_H,  R4,
-  R5_H,  R5,
-  R6_H,  R6,
-  R7_H,  R7,
-  R8_H,  R8,
-  R9_H,  R9,
-  R10_H, R10,
-/*R11_H, R11*/
-/*R12_H, R12*/
-/*R13_H, R13*/   // system thread id
-  R14_H, R14,
-  R15_H, R15,
-/*R16_H, R16*/   // R16_thread
-  R17_H, R17,
-  R18_H, R18,
-/*R19_H, R19*/
-  R20_H, R20,
-  R21_H, R21,
-  R22_H, R22,
-  R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28,
-/*R29_H, R29*/
-/*R30_H, R30*/
-  R31_H, R31
+/*X0_H,  X0*/     // X0
+/*X1_H,  X1*/     // SP
+/*X2_H,  X2*/     // TOC
+  X3_H,  X3,
+  X4_H,  X4,
+  X5_H,  X5,
+  X6_H,  X6,
+  X7_H,  X7,
+  X8_H,  X8,
+  X9_H,  X9,
+  X10_H, X10,
+/*X11_H, X11*/
+/*X12_H, X12*/
+/*X13_H, X13*/   // system thread id
+  X14_H, X14,
+  X15_H, X15,
+/*X16_H, X16*/   // X16_thread
+  X17_H, X17,
+  X18_H, X18,
+/*X19_H, X19*/
+  X20_H, X20,
+  X21_H, X21,
+  X22_H, X22,
+  X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28,
+/*X29_H, X29*/
+/*X30_H, X30*/
+  X31_H, X31
 );
 
 // 64 bit registers that can only be read i.e. these registers can
 // only be src of all instructions.
 reg_class bits64_reg_ro(
-/*R0_H,  R0*/     // R0
-  R1_H,  R1,
-  R2_H,  R2,       // TOC
-  R3_H,  R3,
-  R4_H,  R4,
-  R5_H,  R5,
-  R6_H,  R6,
-  R7_H,  R7,
-  R8_H,  R8,
-  R9_H,  R9,
-  R10_H, R10,
-  R11_H, R11,
-  R12_H, R12,
-/*R13_H, R13*/   // system thread id
-  R14_H, R14,
-  R15_H, R15,
-  R16_H, R16,    // R16_thread
-  R17_H, R17,
-  R18_H, R18,
-  R19_H, R19,
-  R20_H, R20,
-  R21_H, R21,
-  R22_H, R22,
-  R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28,
-/*R29_H, R29*/ // TODO: let allocator handle TOC!!
-/*R30_H, R30,*/
-  R31_H, R31
+/*X0_H,  X0*/     // X0
+  X1_H,  X1,
+  X2_H,  X2,       // TOC
+  X3_H,  X3,
+  X4_H,  X4,
+  X5_H,  X5,
+  X6_H,  X6,
+  X7_H,  X7,
+  X8_H,  X8,
+  X9_H,  X9,
+  X10_H, X10,
+  X11_H, X11,
+  X12_H, X12,
+/*X13_H, X13*/   // system thread id
+  X14_H, X14,
+  X15_H, X15,
+  X16_H, X16,    // X16_thread
+  X17_H, X17,
+  X18_H, X18,
+  X19_H, X19,
+  X20_H, X20,
+  X21_H, X21,
+  X22_H, X22,
+  X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28,
+/*X29_H, X29*/ // TODO: let allocator handle TOC!!
+/*X30_H, X30,*/
+  X31_H, X31
 );
 
 // Complement-required-in-pipeline operands.
 reg_class bits64_reg_ro_not_complement (
-/*R0_H,  R0*/     // R0
-  R1_H,  R1,      // SP
-  R2_H,  R2,      // TOC
-  R3_H,  R3,
-  R4_H,  R4,
-  R5_H,  R5,
-  R6_H,  R6,
-  R7_H,  R7,
-  R8_H,  R8,
-  R9_H,  R9,
-  R10_H, R10,
-  R11_H, R11,
-  R12_H, R12,
-/*R13_H, R13*/   // system thread id
-  R14_H, R14,
-  R15_H, R15,
-  R16_H, R16,    // R16_thread
-  R17_H, R17,
-  R18_H, R18,
-  R19_H, R19,
-  R20_H, R20,
-  R21_H, R21,
-  R22_H, R22,
-/*R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28,*/
-/*R29_H, R29*/ // TODO: let allocator handle TOC!!
-/*R30_H, R30,*/
-  R31_H, R31
+/*X0_H,  X0*/     // X0
+  X1_H,  X1,      // SP
+  X2_H,  X2,      // TOC
+  X3_H,  X3,
+  X4_H,  X4,
+  X5_H,  X5,
+  X6_H,  X6,
+  X7_H,  X7,
+  X8_H,  X8,
+  X9_H,  X9,
+  X10_H, X10,
+  X11_H, X11,
+  X12_H, X12,
+/*X13_H, X13*/   // system thread id
+  X14_H, X14,
+  X15_H, X15,
+  X16_H, X16,    // X16_thread
+  X17_H, X17,
+  X18_H, X18,
+  X19_H, X19,
+  X20_H, X20,
+  X21_H, X21,
+  X22_H, X22,
+/*X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28,*/
+/*X29_H, X29*/ // TODO: let allocator handle TOC!!
+/*X30_H, X30,*/
+  X31_H, X31
 );
 
 // Complement-required-in-pipeline operands.
@@ -754,12 +754,12 @@ reg_class bits64_reg_ro_not_complement (
 // force the value to check into 'bits64_reg_ro_not_complement'
 // and then copy it to 'bits64_reg_ro_complement' for the trap.
 reg_class bits64_reg_ro_complement (
-  R23_H, R23,
-  R24_H, R24,
-  R25_H, R25,
-  R26_H, R26,
-  R27_H, R27,
-  R28_H, R28
+  X23_H, X23,
+  X24_H, X24,
+  X25_H, X25,
+  X26_H, X26,
+  X27_H, X27,
+  X28_H, X28
 );
 
 
@@ -2360,8 +2360,8 @@ const bool Matcher::int_in_long = true;
 // Constants for c2c and c calling conventions.
 
 const MachRegisterNumbers iarg_reg[8] = {
-  R3_num, R4_num, R5_num, R6_num,
-  R7_num, R8_num, R9_num, R10_num
+  X3_num, X4_num, X5_num, X6_num,
+  X7_num, X8_num, X9_num, X10_num
 };
 
 const MachRegisterNumbers farg_reg[13] = {
@@ -2385,14 +2385,14 @@ bool Matcher::can_be_java_arg(int reg) {
   // We must include the virtual halves in order to get STDs and LDs
   // instead of STWs and LWs in the trampoline stubs.
 
-  if (   reg == R3_num  || reg == R3_H_num
-      || reg == R4_num  || reg == R4_H_num
-      || reg == R5_num  || reg == R5_H_num
-      || reg == R6_num  || reg == R6_H_num
-      || reg == R7_num  || reg == R7_H_num
-      || reg == R8_num  || reg == R8_H_num
-      || reg == R9_num  || reg == R9_H_num
-      || reg == R10_num || reg == R10_H_num)
+  if (   reg == X3_num  || reg == X3_H_num
+      || reg == X4_num  || reg == X4_H_num
+      || reg == X5_num  || reg == X5_H_num
+      || reg == X6_num  || reg == X6_H_num
+      || reg == X7_num  || reg == X7_H_num
+      || reg == X8_num  || reg == X8_H_num
+      || reg == X9_num  || reg == X9_H_num
+      || reg == X10_num || reg == X10_H_num)
     return true;
 
   if (   reg == F1_num  || reg == F1_H_num
