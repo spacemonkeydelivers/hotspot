@@ -163,7 +163,8 @@
     alignment_in_bytes = 16,
     // log_2(16*8 bits) = 7.
     log_2_of_alignment_in_bits = 7,
-    pc_return_offset = 0
+    pc_return_offset = 0,
+    memory_parameter_word_sp_offset = 0
   };
 
  private:

@@ -47,6 +47,9 @@
 #ifdef TARGET_ARCH_ppc
 # include "vmreg_ppc.inline.hpp"
 #endif
+#ifdef TARGET_ARCH_riscv
+# include "vmreg_riscv.inline.hpp"
+#endif
 
 
 #ifndef PRODUCT
