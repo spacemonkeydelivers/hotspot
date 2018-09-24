@@ -157,6 +157,7 @@ class NativeInstruction VALUE_OBJ_CLASS_SPEC {
 
  public:
   void verify() NOT_DEBUG_RETURN;
+  bool is_jump() { Unimplemented(); return false; }
 };
 
 inline NativeInstruction* nativeInstruction_at(address address) {
@@ -377,6 +378,137 @@ inline NativeJump* nativeJump_at(address instr) {
   NativeJump* call = (NativeJump*)instr;
   call->verify();
   return call;
+}
+
+// An interface for accessing/manipulating native moves of the form:
+//       lui   AT, split_high(offset)
+//       addiu AT, split_low(offset)
+//       add   reg, reg, AT
+//       lb/lbu/sb/lh/lhu/sh/lw/sw/lwc1/swc1 dest, reg, 0
+//       [lw/sw/lwc1/swc1                    dest, reg, 4]
+//     or
+//       lb/lbu/sb/lh/lhu/sh/lw/sw/lwc1/swc1 dest, reg, offset
+//       [lw/sw/lwc1/swc1                    dest, reg, offset+4]
+//
+// Warning: These routines must be able to handle any instruction sequences
+// that are generated as a result of the load/store byte,word,long
+// macros.
+
+class NativeMovRegMem: public NativeInstruction {
+ public:
+  enum mips_specific_constants {
+    instruction_offset  = 0,
+    hiword_offset   = 4,
+    ldst_offset     = 12,
+    immediate_size  = 4,
+    ldst_size       = 16
+  };
+
+  //offset is less than 16 bits.
+  bool is_immediate() const { return !MacroAssembler::is_lui(long_at(instruction_offset)); }
+  bool is_64ldst() const {
+    return false;
+    #if 0
+    if (is_immediate()) {
+      return (Assembler::opcode(long_at(hiword_offset)) == Assembler::opcode(long_at(instruction_offset))) &&
+       (Assembler::imm_off(long_at(hiword_offset)) == Assembler::imm_off(long_at(instruction_offset)) + wordSize);
+    } else {
+      return (Assembler::opcode(long_at(ldst_offset+hiword_offset)) == Assembler::opcode(long_at(ldst_offset))) &&
+       (Assembler::imm_off(long_at(ldst_offset+hiword_offset)) == Assembler::imm_off(long_at(ldst_offset)) + wordSize);
+    }
+    #endif
+  }
+
+  address instruction_address() const       { return addr_at(instruction_offset); }
+  address next_instruction_address() const  {
+    return addr_at( (is_immediate()? immediate_size : ldst_size) + (is_64ldst()? 4 : 0));
+  }
+
+  int   offset() const;
+
+  void  set_offset(int x);
+
+  void  add_offset_in_bytes(int add_offset)     { set_offset ( ( offset() + add_offset ) ); }
+
+  void verify();
+  void print ();
+
+  // unit test stuff
+  static void test() {}
+
+ private:
+  inline friend NativeMovRegMem* nativeMovRegMem_at (address address);
+};
+
+inline NativeMovRegMem* nativeMovRegMem_at (address address) {
+  NativeMovRegMem* test = (NativeMovRegMem*)(address - NativeMovRegMem::instruction_offset);
+#ifdef ASSERT
+  test->verify();
+#endif
+  return test;
+}
+
+//64 bits:
+//    far jump:
+//          lui   rd, imm(63...48);
+//          ori   rd, rd, imm(47...32);
+//          dsll  rd, rd, 16;
+//          ori   rd, rd, imm(31...16);
+//          dsll  rd, rd, 16;
+//          ori   rd, rd, imm(15...0);
+//          jalr  rd
+//          nop
+//
+class NativeGeneralJump: public NativeInstruction {
+ public:
+  enum mips_specific_constants {
+    instruction_offset   =    0,
+    beq_opcode           =    0x10000000,//000100|00000|00000|offset
+    b_mask         =    0xffff0000,
+    short_size      =    8,
+#ifndef _LP64
+    instruction_size   =    4 * BytesPerInstWord
+#else
+    instruction_size   =    6 * BytesPerInstWord
+#endif
+  };
+
+  bool is_short() const { return (long_at(instruction_offset) & b_mask) == beq_opcode; }
+#ifdef _LP64
+  bool is_b_far() { Unimplemented(); return false; }
+#endif
+  address instruction_address() const { return addr_at(instruction_offset); }
+  address jump_destination() { Unimplemented(); return 0; }
+
+  void  patch_set48_gs(address dest) { Unimplemented(); }
+  void  patch_set48(address dest) { Unimplemented(); }
+
+  void  patch_on_jr_gs(address dest) { Unimplemented(); }
+  void  patch_on_jr(address dest) { Unimplemented(); }
+
+  void  patch_on_j_gs(address dest) { Unimplemented(); }
+  void  patch_on_j(address dest) { Unimplemented(); }
+
+  void  patch_on_j_only(address dest) { Unimplemented(); }
+
+  void  set_jump_destination(address dest) { Unimplemented(); }
+
+  // Creation
+  inline friend NativeGeneralJump* nativeGeneralJump_at(address address);
+
+  // Insertion of native general jump instruction
+  static void insert_unconditional(address code_pos, address entry) { Unimplemented(); };
+  static void replace_mt_safe(address instr_addr, address code_buffer) { Unimplemented(); };
+  static void check_verified_entry_alignment(address entry, address verified_entry) { Unimplemented(); }
+  static void patch_verified_entry(address entry, address verified_entry, address dest) { Unimplemented(); }
+
+  void verify() { Unimplemented(); }
+};
+
+inline NativeGeneralJump* nativeGeneralJump_at(address address) {
+  NativeGeneralJump* jump = (NativeGeneralJump*)(address);
+  debug_only(jump->verify();)
+  return jump;
 }
 
 #endif // CPU_RISCV_VM_NATIVEINST_RISCV_HPP

@@ -157,6 +157,12 @@
     frame_min_bytes   = frame_min_size * wordSize,
     frame_elem_size   = wordSize
   };
+  
+  // Unimplemented
+  enum {
+    jit_out_preserve_size = 0,
+    jit_in_preserve_size  = 0
+  };
 
   enum {
     // Frame alignment on stack

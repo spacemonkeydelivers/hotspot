@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Loongson Technology. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -32,40 +33,42 @@ enum {
 };
 
 // explicit rounding operations are required to implement the strictFP mode
+// i486 is true here, i dont think gs2 need this
 enum {
-  pd_strict_fp_requires_explicit_rounding = true
+  pd_strict_fp_requires_explicit_rounding = false
 };
+
 
 // registers
 enum {
-  pd_nof_cpu_regs_frame_map = RegisterImpl::number_of_registers,       // number of registers used during code emission
-  pd_nof_fpu_regs_frame_map = FloatRegisterImpl::number_of_registers,  // number of registers used during code emission
-//  pd_nof_xmm_regs_frame_map = XMMRegisterImpl::number_of_registers,    // number of registers used during code emission
+  pd_nof_cpu_regs_frame_map = 32,       // number of registers used during code emission
+  // v0, v1, t0-t7, s0-s7
+  // now, we just think s# as caller saved. maybe we should change this to allow cache local
+  // pd_nof_caller_save_cpu_regs_frame_map = 18,  // number of registers killed by calls
+  // t0-t7, s0-s7, v0, v1
+
+  pd_nof_caller_save_cpu_regs_frame_map = 18,  // number of registers killed by calls
+  pd_nof_cpu_regs_reg_alloc = 18,  // number of registers that are visible to register allocator
+  pd_nof_cpu_regs_linearscan = 32, // number of registers visible to linear scan
+  pd_first_cpu_reg = 0,
+  pd_last_cpu_reg = 31,
+  pd_last_allocatable_cpu_reg=20,
+  pd_first_callee_saved_reg = 0,
+  pd_last_callee_saved_reg = 13,
 
 #ifdef _LP64
-  #define UNALLOCATED 4    // rsp, rbp, r15, r10
-#else
-  #define UNALLOCATED 2    // rsp, rbp
-#endif // LP64
-
-  pd_nof_caller_save_cpu_regs_frame_map = pd_nof_cpu_regs_frame_map - UNALLOCATED,  // number of registers killed by calls
-  pd_nof_caller_save_fpu_regs_frame_map = pd_nof_fpu_regs_frame_map,  // number of registers killed by calls
-//  pd_nof_caller_save_xmm_regs_frame_map = pd_nof_xmm_regs_frame_map,  // number of registers killed by calls
-
-  pd_nof_cpu_regs_reg_alloc = pd_nof_caller_save_cpu_regs_frame_map,  // number of registers that are visible to register allocator
-  pd_nof_fpu_regs_reg_alloc = 6,  // number of registers that are visible to register allocator
-
-  pd_nof_cpu_regs_linearscan = pd_nof_cpu_regs_frame_map, // number of registers visible to linear scan
-  pd_nof_fpu_regs_linearscan = pd_nof_fpu_regs_frame_map, // number of registers visible to linear scan
-//  pd_nof_xmm_regs_linearscan = pd_nof_xmm_regs_frame_map, // number of registers visible to linear scan
-  pd_first_cpu_reg = 0,
-  pd_last_cpu_reg = NOT_LP64(5) LP64_ONLY(11),
-  pd_first_byte_reg = NOT_LP64(2) LP64_ONLY(0),
-  pd_last_byte_reg = NOT_LP64(5) LP64_ONLY(11),
+  pd_nof_fpu_regs_frame_map = 32,  // number of registers used during code emission
+  pd_nof_fpu_regs_reg_alloc = 32,  // number of registers that are visible to register allocator
+  pd_nof_caller_save_fpu_regs_frame_map = 32,  // number of fpu registers killed by calls
+  pd_nof_fpu_regs_linearscan = 32,// number of registers visible linear scan
+#endif
   pd_first_fpu_reg = pd_nof_cpu_regs_frame_map,
-  pd_last_fpu_reg =  pd_first_fpu_reg + 7,
-//  pd_first_xmm_reg = pd_nof_cpu_regs_frame_map + pd_nof_fpu_regs_frame_map,
-//  pd_last_xmm_reg =  pd_first_xmm_reg + pd_nof_xmm_regs_frame_map - 1
+  pd_last_fpu_reg =  pd_nof_cpu_regs_frame_map + pd_nof_fpu_regs_frame_map - 1,
+
+  pd_nof_xmm_regs_linearscan = 0,
+  pd_nof_caller_save_xmm_regs = 0,
+  pd_first_xmm_reg = -1,
+  pd_last_xmm_reg = -1
 };
 
 

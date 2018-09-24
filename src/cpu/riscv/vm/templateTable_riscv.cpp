@@ -2601,15 +2601,17 @@ void TemplateTable::getfield_or_static(int byte_no, bool is_static) {
   load_field_cp_cache_entry(Rclass_or_obj, Rcache, noreg, Roffset, Rflags, is_static);
 
   // Load pointer to branch table.
-  __ load_const(Rbtable, (address)branch_table, Rscratch);
+  __ load_const(Rbtable, (address)branch_table);
 
   // Get volatile flag.
-  __ srl(Rscratch, Rflags, ConstantPoolCacheEntry::is_volatile_shift);
+// FIXME: wtf
+//  __ srl(Rscratch, Rflags, ConstantPoolCacheEntry::is_volatile_shift);
   __ andi(Rscratch, Rscratch, 1);
   // TODO: Figure out what this means on PPC: "Note: sync is needed before volatile load on PPC64."
 
   // Check field type.
-  __ srl(Rflags, Rflags, ConstantPoolCacheEntry::tos_state_shift);
+// FIXME: wtf
+//  __ srl(Rflags, Rflags, ConstantPoolCacheEntry::tos_state_shift);
   __ andi(Rflags, Rflags, (1 << ConstantPoolCacheEntry::tos_state_bits) - 1);
 
 #ifdef ASSERT
@@ -2889,8 +2891,10 @@ void TemplateTable::putfield_or_static(int byte_no, bool is_static) {
 
   // Runtime call in do_oop_store, also in patch_bytecode
   const Register Rcache        = X12_ARG2, // Do not use ARG1/2 (causes trouble in jvmti_post_field_mod).
-                 Rclass_or_obj = R31,      // Needs to survive C call.
-                 Roffset       = R22_tmp2, // Needs to survive C call.
+                 // FIXME: wtf
+                 Rclass_or_obj = X31,      // Needs to survive C call.
+                 // FIXME: wtf
+                 Roffset       = X22,      // Needs to survive C call.
                  Rflags        = X10_ARG0,
                  Rbtable       = X11_ARG1,
                  Rscratch      = X5_T0,
@@ -2920,11 +2924,13 @@ void TemplateTable::putfield_or_static(int byte_no, bool is_static) {
   __ load_const(Rbtable, (address)branch_table);
 
   // Get volatile flag.
-  __ srl(Rscratch, Rflags, ConstantPoolCacheEntry::is_volatile_shift);
+// FIXME: wtf
+//  __ srl(Rscratch, Rflags, ConstantPoolCacheEntry::is_volatile_shift);
   __ andi(Rscratch, Rscratch, 1);
 
   // Check field type.
-  __ srl(Rflags, Rflags, ConstantPoolCacheEntry::tos_state_shift);
+// FIXME: wtf
+//  __ srl(Rflags, Rflags, ConstantPoolCacheEntry::tos_state_shift);
   __ andi(Rflags, Rflags, (1 << ConstantPoolCacheEntry::tos_state_bits) - 1);
 
 #ifdef ASSERT
@@ -2940,7 +2946,7 @@ void TemplateTable::putfield_or_static(int byte_no, bool is_static) {
   __ ld(Rbtable, 0, Rbtable);
 
   __ sub(Rbtable, Rbtable, Rscratch); // Point to volatile/non-volatile entry point.
-  __ jr(Rtable);
+  __ jr(Rbtable);
 
 #ifdef ASSERT
   __ bind(LFlagInvalid);
