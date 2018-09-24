@@ -47,6 +47,7 @@
 #include "runtime/javaCalls.hpp"
 #include "runtime/mutexLocker.hpp"
 #include "runtime/osThread.hpp"
+#include "runtime/os.hpp"
 #include "runtime/sharedRuntime.hpp"
 #include "runtime/stubRoutines.hpp"
 #include "runtime/thread.inline.hpp"
@@ -109,12 +110,12 @@ address os::Linux::ucontext_get_pc(ucontext_t * uc) {
   // - if uc was filled by getcontext(), it is undefined - getcontext() does not fill
   //   it because the volatile registers are not needed to make setcontext() work.
   //   Hopefully it was zero'd out beforehand.
-  guarantee(uc->uc_mcontext.gregs != NULL, "only use ucontext_get_pc in sigaction context");
-  return (address)uc->uc_mcontext.gregs[REG_PC];
+  guarantee(uc->uc_mcontext.__gregs != NULL, "only use ucontext_get_pc in sigaction context");
+  return (address)uc->uc_mcontext.__gregs[REG_PC];
 }
 
 intptr_t* os::Linux::ucontext_get_sp(ucontext_t * uc) {
-  return (intptr_t*)uc->uc_mcontext.gregs[REG_SP];
+  return (intptr_t*)uc->uc_mcontext.__gregs[REG_SP];
 }
 
 intptr_t* os::Linux::ucontext_get_fp(ucontext_t * uc) {
@@ -347,7 +348,7 @@ JVM_handle_linux_signal(int sig,
   if (uc) {
     address const pc = os::Linux::ucontext_get_pc(uc);
     if (pc && StubRoutines::is_safefetch_fault(pc)) {
-      uc->uc_mcontext.gregs[REG_PC] = (unsigned long)StubRoutines::continuation_for_safefetch_fault(pc);
+      uc->uc_mcontext.__gregs[REG_PC] = (unsigned long)StubRoutines::continuation_for_safefetch_fault(pc);
       return true;
     }
   }
@@ -372,15 +373,15 @@ JVM_handle_linux_signal(int sig,
           // Crashes sometimes...
           // TODO: Print stuff here.
           /*for (int i = 21; i < 22; ++i) {
-            fprintf(stderr, "| r%02d = %x\n", i, uc->uc_mcontext.gregs[i]);
+            fprintf(stderr, "| r%02d = %x\n", i, uc->uc_mcontext.__gregs[i]);
           }*/
-          fprintf(stderr, "| r%02d = %x\n", 5, uc->uc_mcontext.gregs[5]);
-          fprintf(stderr, "| r%02d = %x\n", 7, uc->uc_mcontext.gregs[7]);
-          fprintf(stderr, "| r%02d = %x\n", 18, uc->uc_mcontext.gregs[18]);
+          fprintf(stderr, "| r%02d = %x\n", 5, uc->uc_mcontext.__gregs[5]);
+          fprintf(stderr, "| r%02d = %x\n", 7, uc->uc_mcontext.__gregs[7]);
+          fprintf(stderr, "| r%02d = %x\n", 18, uc->uc_mcontext.__gregs[18]);
           /*
           int alignment, rs1, offset;
           if (((NativeInstruction*)next)->is_load_from(&alignment, &rs1, &offset)) {
-            if ((uc->uc_mcontext.gregs[rs1] + offset) % alignment != 0) {
+            if ((uc->uc_mcontext.__gregs[rs1] + offset) % alignment != 0) {
               fprintf(stderr, "Warning :: Misaligned load found!\n");
               fprintf(stderr, "| r%02d = %x\n", rs1, uc->uc_mcontext.gregs[rs1]);
               fprintf(stderr, "| offset = %d\n", offset);
@@ -389,13 +390,13 @@ JVM_handle_linux_signal(int sig,
           */
         } else {
           if (trace_opcode == 0xff) {
-            printf("tos = %x\n", uc->uc_mcontext.gregs[21]);
+            printf("tos = %x\n", uc->uc_mcontext.__gregs[21]);
           } else {
             puts(get_opcode_str(trace_opcode));
           }
         }
         // In this case, print the next instruction, and jump to it.
-        uc->uc_mcontext.gregs[REG_PC] = (unsigned long) next;
+        uc->uc_mcontext.__gregs[REG_PC] = (unsigned long) next;
         return true;
       }
 #endif
@@ -535,7 +536,7 @@ JVM_handle_linux_signal(int sig,
           // continue at the next instruction after the faulting read. Returning
           // garbage from this read is ok.
           thread->set_pending_unsafe_access_error();
-          uc->uc_mcontext.gregs[REG_PC] = ((unsigned long)pc) + 4;
+          uc->uc_mcontext.__gregs[REG_PC] = ((unsigned long)pc) + 4;
           return true;
         }
       }
@@ -554,7 +555,7 @@ JVM_handle_linux_signal(int sig,
         // continue at the next instruction after the faulting read. Returning
         // garbage from this read is ok.
         thread->set_pending_unsafe_access_error();
-        uc->uc_mcontext.gregs[REG_PC] = ((unsigned long)pc) + 4;
+        uc->uc_mcontext.__gregs[REG_PC] = ((unsigned long)pc) + 4;
         return true;
       }
     }
@@ -577,7 +578,7 @@ JVM_handle_linux_signal(int sig,
   if (stub != NULL) {
     // Save all thread context in case we need to restore it.
     if (thread != NULL) thread->set_saved_exception_pc(pc);
-    uc->uc_mcontext.gregs[REG_PC] = (unsigned long)stub;
+    uc->uc_mcontext.__gregs[REG_PC] = (unsigned long)stub;
     return true;
   }
 
@@ -680,7 +681,7 @@ size_t os::Linux::default_guard_size(os::ThreadType thr_type) {
 //    pthread_attr_getstack()
 
 static void current_stack_region(address * bottom, size_t * size) {
-  if (os::Linux::is_initial_thread()) {
+  if (os::is_primordial_thread()) {
      // initial thread needs special handling because pthread_getattr_np()
      // may return bogus value.
     *bottom = os::Linux::initial_thread_stack_bottom();
@@ -736,7 +737,7 @@ void os::print_context(outputStream *st, void *context) {
   st->print_cr("Registers:");
   st->cr();
   for (int i = 0; i < 32; i++) {
-    st->print("r%-2d=" INTPTR_FORMAT "  ", i, uc->uc_mcontext.gregs[i]);
+    st->print("r%-2d=" INTPTR_FORMAT "  ", i, uc->uc_mcontext.__gregs[i]);
     if (i % 3 == 2) st->cr();
   }
   st->cr();
@@ -767,7 +768,7 @@ void os::print_register_info(outputStream *st, void *context) {
   // this is only for the "general purpose" registers
   for (int i = 0; i < 32; i++) {
     st->print("r%-2d=", i);
-    print_location(st, uc->uc_mcontext.gregs[i]);
+    print_location(st, uc->uc_mcontext.__gregs[i]);
   }
   st->cr();
 }

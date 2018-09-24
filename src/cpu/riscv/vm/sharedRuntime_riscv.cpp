@@ -39,7 +39,7 @@
 #endif
 #ifdef COMPILER2
 #include "opto/runtime.hpp"
-#include "adfiles/ad_riscv.hpp"
+#include "adfiles/ad_riscv_64.hpp"
 #endif
 
 #define __ masm->
@@ -2960,7 +2960,8 @@ void SharedRuntime::generate_deopt_blob() {
   __ unimplemented("deopt blob needed only with compiler");
   int exception_offset = __ pc() - start;
 #endif // COMPILER2
-
+  Unimplemented();
+  int exception_offset = __ pc() - start;
   _deopt_blob = DeoptimizationBlob::create(&buffer, oop_maps, 0, exception_offset, 0, first_frame_size_in_bytes / wordSize);
 }
 

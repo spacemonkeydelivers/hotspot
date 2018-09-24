@@ -2041,6 +2041,9 @@ void MacroAssembler::zap_from_to(Register low, int before, Register high, int af
   BLOCK_COMMENT("} zap memory region");
   */
 }
+void MacroAssembler::null_check(Register reg, int offset) {
+  Unimplemented();
+}
 
 #endif // !PRODUCT
 

@@ -85,6 +85,8 @@ void OptoRuntime::generate_exception_blob() {
   CodeBuffer buffer("exception_blob", 2048, 1024);
   InterpreterMacroAssembler* masm = new InterpreterMacroAssembler(&buffer);
 
+  Unimplemented();
+  #if 0
   address start = __ pc();
 
   int frame_size_in_bytes = frame::abi_reg_args_size;
@@ -186,6 +188,7 @@ void OptoRuntime::generate_exception_blob() {
   // Set exception blob.
   _exception_blob = ExceptionBlob::create(&buffer, oop_maps,
                                           frame_size_in_bytes/wordSize);
+  #endif
 }
 
 #endif // COMPILER2

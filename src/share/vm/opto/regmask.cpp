@@ -38,7 +38,7 @@
 #elif defined target_arch_model_ppc_64
 # include "adfiles/ad_ppc_64.hpp"
 #elif defined TARGET_ARCH_MODEL_riscv_64
-# include "adfiles/ad_riscv.hpp"
+# include "adfiles/ad_riscv_64.hpp"
 #endif
 
 #define RM_SIZE _RM_SIZE /* a constant private to the class RegMask */
