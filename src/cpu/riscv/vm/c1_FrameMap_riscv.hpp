@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1999, 2012, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Loongson Technology. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,175 +23,230 @@
  *
  */
 
-#ifndef CPU_RISCV_VM_C1_FRAMEMAP_RISCV_HPP
-#define CPU_RISCV_VM_C1_FRAMEMAP_RISCV_HPP
+#ifndef CPU_MIPS_VM_C1_FRAMEMAP_MIPS_HPP
+#define CPU_MIPS_VM_C1_FRAMEMAP_MIPS_HPP
+
+//  On i486/gs2 the frame looks as follows:
+//
+//  +----------------+---------+----------------------------+----------------+-----------
+//  | size_arguments | 2 words | size_locals-size_arguments | _size_monitors | spilling .
+//  +----------------+---------+----------------------------+----------------+-----------
+//
+ private:
+
+  //static FloatRegister  _fpu_regs [nof_fpu_regs];
+  static FloatRegister  _fpu_regs [32];
+
+  WordSize fp_offset_for_slot          (int slot) const;
+  int      local_to_slot               (int local_name, bool is_two_word) const;
+  // NOTE : name consist of argument, local, spill, they are not continuous
+  WordSize fp_offset_for_name          (int name, bool is_two_word, bool for_hi_word) const;
+  WordSize fp_offset_for_monitor_lock  (int monitor_index) const;
+  WordSize fp_offset_for_monitor_object(int monitor_index) const;
+  bool     location_for_fp_offset      (WordSize word_offset_from_fp,
+                                        Location::Type loc_type,
+                                        Location* loc) const;
+  WordSize fp2sp_offset                (WordSize fp_offset) const;
+
 
  public:
-
+  static const int pd_c_runtime_reserved_arg_size;
   enum {
-    nof_reg_args = 6,   // registers o0-o5 are available for parameter passing
-    first_available_sp_in_frame = frame::memory_parameter_word_sp_offset * BytesPerWord,
-    frame_pad_in_bytes = 0
+    nof_reg_args       = 5,   // registers t0,a0-a3 are available for parameter passing
+    first_available_sp_in_frame   = 0,
+    //frame_pad_in_bytes       = 8
+    frame_pad_in_bytes       = 2 * sizeof(intptr_t)
   };
 
-  static const int pd_c_runtime_reserved_arg_size;
-
-  static LIR_Opr G0_opr;
-  static LIR_Opr G1_opr;
-  static LIR_Opr G2_opr;
-  static LIR_Opr G3_opr;
-  static LIR_Opr G4_opr;
-  static LIR_Opr G5_opr;
-  static LIR_Opr G6_opr;
-  static LIR_Opr G7_opr;
-  static LIR_Opr O0_opr;
-  static LIR_Opr O1_opr;
-  static LIR_Opr O2_opr;
-  static LIR_Opr O3_opr;
-  static LIR_Opr O4_opr;
-  static LIR_Opr O5_opr;
-  static LIR_Opr O6_opr;
-  static LIR_Opr O7_opr;
-  static LIR_Opr L0_opr;
-  static LIR_Opr L1_opr;
-  static LIR_Opr L2_opr;
-  static LIR_Opr L3_opr;
-  static LIR_Opr L4_opr;
-  static LIR_Opr L5_opr;
-  static LIR_Opr L6_opr;
-  static LIR_Opr L7_opr;
-  static LIR_Opr I0_opr;
-  static LIR_Opr I1_opr;
-  static LIR_Opr I2_opr;
-  static LIR_Opr I3_opr;
-  static LIR_Opr I4_opr;
-  static LIR_Opr I5_opr;
-  static LIR_Opr I6_opr;
-  static LIR_Opr I7_opr;
-
-  static LIR_Opr SP_opr;
-  static LIR_Opr FP_opr;
-
-  static LIR_Opr G0_oop_opr;
-  static LIR_Opr G1_oop_opr;
-  static LIR_Opr G2_oop_opr;
-  static LIR_Opr G3_oop_opr;
-  static LIR_Opr G4_oop_opr;
-  static LIR_Opr G5_oop_opr;
-  static LIR_Opr G6_oop_opr;
-  static LIR_Opr G7_oop_opr;
-  static LIR_Opr O0_oop_opr;
-  static LIR_Opr O1_oop_opr;
-  static LIR_Opr O2_oop_opr;
-  static LIR_Opr O3_oop_opr;
-  static LIR_Opr O4_oop_opr;
-  static LIR_Opr O5_oop_opr;
-  static LIR_Opr O6_oop_opr;
-  static LIR_Opr O7_oop_opr;
-  static LIR_Opr L0_oop_opr;
-  static LIR_Opr L1_oop_opr;
-  static LIR_Opr L2_oop_opr;
-  static LIR_Opr L3_oop_opr;
-  static LIR_Opr L4_oop_opr;
-  static LIR_Opr L5_oop_opr;
-  static LIR_Opr L6_oop_opr;
-  static LIR_Opr L7_oop_opr;
-  static LIR_Opr I0_oop_opr;
-  static LIR_Opr I1_oop_opr;
-  static LIR_Opr I2_oop_opr;
-  static LIR_Opr I3_oop_opr;
-  static LIR_Opr I4_oop_opr;
-  static LIR_Opr I5_oop_opr;
-  static LIR_Opr I6_oop_opr;
-  static LIR_Opr I7_oop_opr;
-
-  static LIR_Opr G0_metadata_opr;
-  static LIR_Opr G1_metadata_opr;
-  static LIR_Opr G2_metadata_opr;
-  static LIR_Opr G3_metadata_opr;
-  static LIR_Opr G4_metadata_opr;
-  static LIR_Opr G5_metadata_opr;
-  static LIR_Opr G6_metadata_opr;
-  static LIR_Opr G7_metadata_opr;
-  static LIR_Opr O0_metadata_opr;
-  static LIR_Opr O1_metadata_opr;
-  static LIR_Opr O2_metadata_opr;
-  static LIR_Opr O3_metadata_opr;
-  static LIR_Opr O4_metadata_opr;
-  static LIR_Opr O5_metadata_opr;
-  static LIR_Opr O6_metadata_opr;
-  static LIR_Opr O7_metadata_opr;
-  static LIR_Opr L0_metadata_opr;
-  static LIR_Opr L1_metadata_opr;
-  static LIR_Opr L2_metadata_opr;
-  static LIR_Opr L3_metadata_opr;
-  static LIR_Opr L4_metadata_opr;
-  static LIR_Opr L5_metadata_opr;
-  static LIR_Opr L6_metadata_opr;
-  static LIR_Opr L7_metadata_opr;
-  static LIR_Opr I0_metadata_opr;
-  static LIR_Opr I1_metadata_opr;
-  static LIR_Opr I2_metadata_opr;
-  static LIR_Opr I3_metadata_opr;
-  static LIR_Opr I4_metadata_opr;
-  static LIR_Opr I5_metadata_opr;
-  static LIR_Opr I6_metadata_opr;
-  static LIR_Opr I7_metadata_opr;
-
-  static LIR_Opr in_long_opr;
-  static LIR_Opr out_long_opr;
-  static LIR_Opr g1_long_single_opr;
-
-  static LIR_Opr F0_opr;
-  static LIR_Opr F0_double_opr;
-
-  static LIR_Opr Oexception_opr;
-  static LIR_Opr Oissuing_pc_opr;
-
- private:
-  static FloatRegister  _fpu_regs [nof_fpu_regs];
-
-  static LIR_Opr as_long_single_opr(Register r) {
-    return LIR_OprFact::double_cpu(cpu_reg2rnr(r), cpu_reg2rnr(r));
-  }
-  static LIR_Opr as_long_pair_opr(Register r) {
-    return LIR_OprFact::double_cpu(cpu_reg2rnr(r->successor()), cpu_reg2rnr(r));
-  }
-
- public:
-
-#ifdef _LP64
-  static LIR_Opr as_long_opr(Register r) {
-    return as_long_single_opr(r);
-  }
-  static LIR_Opr as_pointer_opr(Register r) {
-    return as_long_single_opr(r);
-  }
+  static LIR_Opr _zero_opr;
+  static LIR_Opr _at_opr;
+  static LIR_Opr _v0_opr;
+  static LIR_Opr _v1_opr;
+  static LIR_Opr _a0_opr;
+  static LIR_Opr _a1_opr;
+  static LIR_Opr _a2_opr;
+  static LIR_Opr _a3_opr;
+  static LIR_Opr _t0_opr;
+  static LIR_Opr _t1_opr;
+  static LIR_Opr _t2_opr;
+  static LIR_Opr _t3_opr;
+#ifndef _LP64
+  static LIR_Opr _t4_opr;
+  static LIR_Opr _t5_opr;
+  static LIR_Opr _t6_opr;
+  static LIR_Opr _t7_opr;
 #else
-  static LIR_Opr as_long_opr(Register r) {
-    return as_long_pair_opr(r);
-  }
-  static LIR_Opr as_pointer_opr(Register r) {
-    return as_opr(r);
-  }
+  static LIR_Opr _a4_opr;
+  static LIR_Opr _a5_opr;
+  static LIR_Opr _a6_opr;
+  static LIR_Opr _a7_opr;
 #endif
-  static LIR_Opr as_float_opr(FloatRegister r) {
-    return LIR_OprFact::single_fpu(r->encoding());
-  }
-  /*
-  static LIR_Opr as_double_opr(FloatRegister r) {
-    return LIR_OprFact::double_fpu(r->successor()->encoding(), r->encoding());
-  }
-  */
+  static LIR_Opr _t8_opr;
+  static LIR_Opr _t9_opr;
+  static LIR_Opr _s0_opr;
+  static LIR_Opr _s1_opr;
+  static LIR_Opr _s2_opr;
+  static LIR_Opr _s3_opr;
+  static LIR_Opr _s4_opr;
+  static LIR_Opr _s5_opr;
+  static LIR_Opr _s6_opr;
+  static LIR_Opr _s7_opr;
+  static LIR_Opr _gp_opr;
+  static LIR_Opr _fp_opr;
+  static LIR_Opr _sp_opr;
+  static LIR_Opr _ra_opr;
+  static LIR_Opr _k0_opr;
+  static LIR_Opr _k1_opr;
 
-  static FloatRegister nr2floatreg (int rnr);
+  static LIR_Opr _f0_opr;
+  static LIR_Opr _f12_opr;
+  static LIR_Opr _f14_opr;
+  static LIR_Opr _d0_opr;
+  static LIR_Opr _d12_opr;
+  static LIR_Opr _d14_opr;
 
-  static VMReg fpu_regname (int n);
+  static LIR_Opr _a0_a1_opr;
+  static LIR_Opr _a2_a3_opr;
+  static LIR_Opr _v0_v1_opr;
 
-  static bool is_caller_save_register (LIR_Opr  reg);
-  static bool is_caller_save_register (Register r);
 
-  static int nof_caller_save_cpu_regs() { return pd_nof_caller_save_cpu_regs_frame_map; }
-  static int last_cpu_reg()             { return pd_last_cpu_reg;  }
+  static LIR_Opr receiver_opr;
+  static LIR_Opr _zero_oop_opr;
+  static LIR_Opr _at_oop_opr;
+  static LIR_Opr _v0_oop_opr;
+  static LIR_Opr _v1_oop_opr;
+  static LIR_Opr _a0_oop_opr;
+  static LIR_Opr _a1_oop_opr;
+  static LIR_Opr _a2_oop_opr;
+  static LIR_Opr _a3_oop_opr;
+  static LIR_Opr _t0_oop_opr;
+  static LIR_Opr _t1_oop_opr;
+  static LIR_Opr _t2_oop_opr;
+  static LIR_Opr _t3_oop_opr;
+#ifndef _LP64
+  static LIR_Opr _t4_oop_opr;
+  static LIR_Opr _t5_oop_opr;
+  static LIR_Opr _t6_oop_opr;
+  static LIR_Opr _t7_oop_opr;
+#else
+  static LIR_Opr _a4_oop_opr;
+  static LIR_Opr _a5_oop_opr;
+  static LIR_Opr _a6_oop_opr;
+  static LIR_Opr _a7_oop_opr;
+#endif
+  static LIR_Opr _t8_oop_opr;
+  static LIR_Opr _t9_oop_opr;
+  static LIR_Opr _s0_oop_opr;
+  static LIR_Opr _s1_oop_opr;
+  static LIR_Opr _s2_oop_opr;
+  static LIR_Opr _s3_oop_opr;
+  static LIR_Opr _s4_oop_opr;
+  static LIR_Opr _s5_oop_opr;
+  static LIR_Opr _s6_oop_opr;
+  static LIR_Opr _s7_oop_opr;
+  static LIR_Opr _gp_oop_opr;
+  static LIR_Opr _fp_oop_opr;
+  static LIR_Opr _sp_oop_opr;
+  static LIR_Opr _ra_oop_opr;
+  static LIR_Opr _k0_oop_opr;
+  static LIR_Opr _k1_oop_opr;
 
-#endif // CPU_RISCV_VM_C1_FRAMEMAP_RISCV_HPP
+  static LIR_Opr _f0_oop_opr;
+  static LIR_Opr _f12_oop_opr;
+  static LIR_Opr _f14_oop_opr;
+  static LIR_Opr _d0_oop_opr;
+  static LIR_Opr _d12_oop_opr;
+  static LIR_Opr _d14_oop_opr;
+
+  static LIR_Opr _a0_a1_oop_opr;
+  static LIR_Opr _a2_a3_oop_opr;
+  static LIR_Opr _v0_v1_oop_opr;
+
+//FIXME, needed under 64-bit? by aoqi
+  static LIR_Opr _a0_a1_long_opr;
+  static LIR_Opr _a2_a3_long_opr;
+  static LIR_Opr _v0_v1_long_opr;
+  static LIR_Opr _f0_float_opr;
+  static LIR_Opr _f12_float_opr;
+  static LIR_Opr _f14_float_opr;
+  static LIR_Opr _d0_double_opr;
+  static LIR_Opr _d12_double_opr;
+  static LIR_Opr _d14_double_opr;
+
+
+  static LIR_Opr _zero_metadata_opr;
+  static LIR_Opr _at_metadata_opr;
+  static LIR_Opr _v0_metadata_opr;
+  static LIR_Opr _v1_metadata_opr;
+  static LIR_Opr _a0_metadata_opr;
+  static LIR_Opr _a1_metadata_opr;
+  static LIR_Opr _a2_metadata_opr;
+  static LIR_Opr _a3_metadata_opr;
+  static LIR_Opr _t0_metadata_opr;
+  static LIR_Opr _t1_metadata_opr;
+  static LIR_Opr _t2_metadata_opr;
+  static LIR_Opr _t3_metadata_opr;
+  static LIR_Opr _a4_metadata_opr;
+  static LIR_Opr _a5_metadata_opr;
+  static LIR_Opr _a6_metadata_opr;
+  static LIR_Opr _a7_metadata_opr;
+  static LIR_Opr _t8_metadata_opr;
+  static LIR_Opr _t9_metadata_opr;
+  static LIR_Opr _s0_metadata_opr;
+  static LIR_Opr _s1_metadata_opr;
+  static LIR_Opr _s2_metadata_opr;
+  static LIR_Opr _s3_metadata_opr;
+  static LIR_Opr _s4_metadata_opr;
+  static LIR_Opr _s5_metadata_opr;
+  static LIR_Opr _s6_metadata_opr;
+  static LIR_Opr _s7_metadata_opr;
+  static LIR_Opr _gp_metadata_opr;
+  static LIR_Opr _fp_metadata_opr;
+  static LIR_Opr _sp_metadata_opr;
+  static LIR_Opr _ra_metadata_opr;
+  static LIR_Opr _k0_metadata_opr;
+  static LIR_Opr _k1_metadata_opr;
+
+//no implementation
+  static LIR_Opr _f0_metadata_opr;
+  static LIR_Opr _f12_metadata_opr;
+  static LIR_Opr _f14_metadata_opr;
+  static LIR_Opr _d0_metadata_opr;
+  static LIR_Opr _d12_metadata_opr;
+  static LIR_Opr _d14_metadata_opr;
+
+  static LIR_Opr _a0_a1_metadata_opr;
+  static LIR_Opr _a2_a3_metadata_opr;
+  static LIR_Opr _v0_v1_metadata_opr;
+
+static LIR_Opr as_long_opr(Register r, Register r2){
+  return LIR_OprFact::double_cpu(cpu_reg2rnr(r), cpu_reg2rnr(r2));
+}
+
+static LIR_Opr as_float_opr(FloatRegister r) {
+  return LIR_OprFact::single_fpu(r->encoding());
+}
+
+
+static bool is_caller_save_register (LIR_Opr  opr);
+static bool is_caller_save_register (Register r);
+
+
+// OptoReg name for spilled virtual FPU register n
+//OptoReg::Name fpu_regname (int n);
+
+static VMReg fpu_regname (int n);
+static Register first_register();
+static FloatRegister nr2floatreg (int rnr);
+static int adjust_reg_range(int range) {
+  // Reduce the number of available regs (to free r12) in case of compressed oops
+  if (UseCompressedOops || UseCompressedClassPointers) return range - 1;
+  return range;
+}
+
+static int nof_caller_save_cpu_regs() { return adjust_reg_range(pd_nof_caller_save_cpu_regs_frame_map); }
+static int last_cpu_reg()             { return adjust_reg_range(pd_last_cpu_reg);  }
+//static int last_byte_reg()            { return adjust_reg_range(pd_last_byte_reg); }
+
+#endif // CPU_MIPS_VM_C1_FRAMEMAP_MIPS_HPP
+
