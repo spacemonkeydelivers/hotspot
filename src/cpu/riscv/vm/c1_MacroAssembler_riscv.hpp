@@ -35,14 +35,29 @@
     Register t1,                       // temp register
     Register t2,                       // temp register
     Label&   slow_case                 // continuation point if fast allocation fails
-  );
+  )
+  {
+    Unimplemented();
+  }
 
-  void initialize_header(Register obj, Register klass, Register len, Register t1, Register t2);
-  void initialize_body(Register base, Register index);
+  void initialize_header(Register obj, Register klass, Register len, Register t1, Register t2)
+  {
+    Unimplemented();
+  }
+  void initialize_body(Register base, Register index)
+  {
+    Unimplemented();
+  }
 
   // locking/unlocking
-  void lock_object  (Register Rmark, Register Roop, Register Rbox, Register Rscratch, Label& slow_case);
-  void unlock_object(Register Rmark, Register Roop, Register Rbox,                    Label& slow_case);
+  void lock_object  (Register Rmark, Register Roop, Register Rbox, Register Rscratch, Label& slow_case)
+  {
+    Unimplemented();
+  }
+  void unlock_object(Register Rmark, Register Roop, Register Rbox,                    Label& slow_case)
+  {
+    Unimplemented();
+  }
 
   void initialize_object(
     Register obj,                      // result: pointer to object after successful allocation
@@ -51,7 +66,10 @@
     int      con_size_in_bytes,        // object size in bytes if   known at compile time
     Register t1,                       // temp register
     Register t2                        // temp register
-  );
+  )
+  {
+    Unimplemented();
+  }
 
   // allocation of fixed-size objects
   // (can also be used to allocate fixed-size arrays, by setting
@@ -65,7 +83,10 @@
     int      obj_size,                 // object size in words
     Register klass,                    // object klass
     Label&   slow_case                 // continuation point if fast allocation fails
-  );
+  )
+  {
+    Unimplemented();
+  }
 
   enum {
     max_array_allocation_length = 0x01000000 // sparc friendly value, requires sethi only
@@ -82,7 +103,10 @@
     int      elt_size,                 // element size in bytes
     Register klass,                    // object klass
     Label&   slow_case                 // continuation point if fast allocation fails
-  );
+  )
+  {
+    Unimplemented();
+  }
 
   // invalidates registers in this window
   void invalidate_registers(bool iregisters, bool lregisters, bool oregisters,

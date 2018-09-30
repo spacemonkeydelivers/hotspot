@@ -1459,7 +1459,7 @@ uint MachUEPNode::size(PhaseRegAlloc *ra_) const {
 
 //=============================================================================
 
-//const RegMask& MachConstantBaseNode::_out_RegMask = P_REG_mask();
+const RegMask& MachConstantBaseNode::_out_RegMask = 0;
 
 int Compile::ConstantTable::calculate_table_base_offset() const {
   return 0;  // absolute addressing, no offset

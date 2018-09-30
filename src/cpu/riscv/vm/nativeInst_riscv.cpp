@@ -52,6 +52,69 @@ bool NativeInstruction::is_sigill_zombie_not_entrant_at(address addr) {
   */
 }
 
+void NativeMovRegMem::set_offset(int x) {
+  Unimplemented();
+  #if 0
+  if (is_immediate()) {
+    assert(Assembler::is_simm16(x), "just check");
+    set_int_at(0, (int_at(0)&0xffff0000) | (x&0xffff) );
+    if (is_64ldst()) {
+      assert(Assembler::is_simm16(x+4), "just check");
+      set_int_at(4, (int_at(4)&0xffff0000) | ((x+4)&0xffff) );
+    }
+  } else {
+    set_int_at(0, (int_at(0) & 0xffff0000) | (Assembler::split_high(x) & 0xffff));
+    set_int_at(4, (int_at(4) & 0xffff0000) | (Assembler::split_low(x) & 0xffff));
+  }
+  ICache::invalidate_range(addr_at(0), 8);
+  #endif
+}
+
+void NativeMovRegMem::verify() {
+  Unimplemented();
+  #if 0
+  int offset = 0;
+
+  if ( Assembler::opcode(int_at(0)) == Assembler::lui_op ) {
+#ifndef _LP64
+    if ( (Assembler::opcode(int_at(4)) != Assembler::addiu_op) ||
+         (Assembler::opcode(int_at(8)) != Assembler::special_op) ||
+         (Assembler::special(int_at(8)) != Assembler::add_op))
+#else
+      /* Jin: fit MIPS64 */
+    if ( (Assembler::opcode(int_at(4)) != Assembler::addiu_op &&
+          Assembler::opcode(int_at(4)) != Assembler::daddiu_op ) ||
+         (Assembler::opcode(int_at(8)) != Assembler::special_op) ||
+         (Assembler::special(int_at(8)) != Assembler::add_op
+       && Assembler::special(int_at(8)) != Assembler::dadd_op))
+#endif
+      fatal ("not a mov [reg+offs], reg instruction");
+      offset += 12;
+  }
+
+  switch(Assembler::opcode(int_at(offset))) {
+    case Assembler::lb_op:
+    case Assembler::lbu_op:
+    case Assembler::lh_op:
+    case Assembler::lhu_op:
+    case Assembler::lw_op:
+    case Assembler::lwu_op:
+    LP64_ONLY(case Assembler::ld_op:)
+    case Assembler::lwc1_op:
+    LP64_ONLY(case Assembler::ldc1_op:)
+    case Assembler::sb_op:
+    case Assembler::sh_op:
+    case Assembler::sw_op:
+    LP64_ONLY(case Assembler::sd_op:)
+    case Assembler::swc1_op:
+    LP64_ONLY(case Assembler::sdc1_op:)
+      break;
+    default:
+      fatal ("not a mov [reg+offs], reg instruction");
+  }
+  #endif
+}
+
 #ifdef ASSERT
 void NativeInstruction::verify() {
   // Make sure code pattern is actually an instruction address.

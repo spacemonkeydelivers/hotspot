@@ -113,8 +113,8 @@ PredicateFailedStub::PredicateFailedStub(CodeEmitInfo* info) {
   _info = new CodeEmitInfo(info);
 }
 
-/*
-void PreidicateFailedStub::emit_code(LIR_Assembler* ce) {
+
+void PredicateFailedStub::emit_code(LIR_Assembler* ce) {
   Unimplemented();
   #if 0
   __ bind(_entry);
@@ -126,7 +126,6 @@ void PreidicateFailedStub::emit_code(LIR_Assembler* ce) {
   debug_only(__ should_not_reach_here());
   #endif
 }
-*/
 
 void DivByZeroStub::emit_code(LIR_Assembler* ce) {
   Unimplemented();
