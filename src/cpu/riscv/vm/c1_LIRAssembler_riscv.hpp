@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2000, 2012, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Loongson Technology. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,49 +28,36 @@
 
  private:
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //
-  // Sparc load/store emission
-  //
-  // The sparc ld/st instructions cannot accomodate displacements > 13 bits long.
-  // The following "pseudo" sparc instructions (load/store) make it easier to use the indexed addressing mode
-  // by allowing 32 bit displacements:
-  //
-  //    When disp <= 13 bits long, a single load or store instruction is emitted with (disp + [d]).
-  //    When disp >  13 bits long, code is emitted to set the displacement into the O7 register,
-  //       and then a load or store is emitted with ([O7] + [d]).
-  //
+//  Address::ScaleFactor array_element_size(BasicType type) const;
 
-  int store(LIR_Opr from_reg, Register base, int offset, BasicType type, bool wide, bool unaligned);
-  int store(LIR_Opr from_reg, Register base, Register disp, BasicType type, bool wide);
+  void arith_fpu_implementation(LIR_Code code, int left_index, int right_index, int dest_index, bool pop_fpu_stack);
 
-  int load(Register base, int offset, LIR_Opr to_reg, BasicType type, bool wide, bool unaligned);
-  int load(Register base, Register disp, LIR_Opr to_reg, BasicType type, bool wide);
+  // helper functions which checks for overflow and sets bailout if it
+  // occurs.  Always returns a valid embeddable pointer but in the
+  // bailout case the pointer won't be to unique storage.
+  address float_constant(float f);
+  address double_constant(double d);
 
-  void monitorexit(LIR_Opr obj_opr, LIR_Opr lock_opr, Register hdr, int monitor_no);
+  bool is_literal_address(LIR_Address* addr);
 
-  int shift_amount(BasicType t);
-
-  static bool is_single_instruction(LIR_Op* op);
+  // Reset base register
+//  Address rebase_Address(LIR_Address* addr, Register tmp = NOREG);
+  Address rebase_Address(LIR_Address* addr, Register tmp = 0);
 
   // Record the type of the receiver in ReceiverTypeData
-  void type_profile_helper(Register mdo, int mdo_offset_bias,
+  void type_profile_helper(Register mdo,
                            ciMethodData *md, ciProfileData *data,
-                           Register recv, Register tmp1, Label* update_done);
-  // Setup pointers to MDO, MDO slot, also compute offset bias to access the slot.
-  void setup_md_access(ciMethod* method, int bci,
-                       ciMethodData*& md, ciProfileData*& data, int& mdo_offset_bias);
- public:
-  void   pack64(LIR_Opr src, LIR_Opr dst);
-  void unpack64(LIR_Opr src, LIR_Opr dst);
+                           Register recv, Label* update_done);
 
-enum {
-#ifdef _LP64
-         call_stub_size = 68,
-#else
-         call_stub_size = 20,
-#endif // _LP64
-         exception_handler_size = DEBUG_ONLY(1*K) NOT_DEBUG(128),
-         deopt_handler_size = DEBUG_ONLY(1*K) NOT_DEBUG(64)  };
+public:
+
+  void store_parameter(Register r, int offset_from_esp_in_words);
+  void store_parameter(jint c,     int offset_from_esp_in_words);
+  void store_parameter(jobject c,  int offset_from_esp_in_words);
+
+  enum { call_stub_size = NOT_LP64(24) LP64_ONLY(40),
+         exception_handler_size = DEBUG_ONLY(1*K) NOT_DEBUG(175),
+         deopt_handler_size = NOT_LP64(16) LP64_ONLY(32)
+       };
 
 #endif // CPU_RISCV_VM_C1_LIRASSEMBLER_RISCV_HPP

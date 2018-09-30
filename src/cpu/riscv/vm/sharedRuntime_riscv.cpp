@@ -3247,3 +3247,10 @@ RuntimeStub* SharedRuntime::generate_resolve_blob(address destination, const cha
   return RuntimeStub::new_runtime_stub(name, &buffer, frame_complete, frame_size_in_bytes/wordSize,
                                        oop_maps, true);
 }
+
+// Is vector's size (in bytes) bigger than a size saved by default?
+// 16 bytes XMM registers are saved by default using fxsave/fxrstor instructions.
+bool SharedRuntime::is_wide_vector(int size) {
+  return size > 16;
+}
+
