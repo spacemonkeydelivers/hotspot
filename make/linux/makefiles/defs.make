@@ -115,7 +115,7 @@ ifneq (,$(findstring $(ARCH), ppc ppc64))
 endif
 
 # RISCV
-ifeq ($(ARCH), riscv64)
+ifeq ($(ARCH), riscv)
   ARCH_DATA_MODEL  = 64
   MAKE_ARGS        += LP64=1
   PLATFORM         = linux-riscv64
