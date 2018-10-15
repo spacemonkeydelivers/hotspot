@@ -2794,7 +2794,8 @@ void TemplateTable::getfield(int byte_no) {
 
 void TemplateTable::getstatic(int byte_no) {
   __ bytecode_marker(0xb2);
-  getfield_or_static(byte_no, true);
+  __ unimplemented(__LOCATION__);
+  //getfield_or_static(byte_no, true);
 }
 
 // The registers cache and index expected to be set before call.
@@ -3113,7 +3114,8 @@ void TemplateTable::putfield(int byte_no) {
 
 void TemplateTable::putstatic(int byte_no) {
   __ bytecode_marker(0xb3);
-  putfield_or_static(byte_no, true);
+  __ unimplemented(__LOCATION__);
+  //putfield_or_static(byte_no, true);
 }
 
 // See SPARC. On RISCV64, we have a different jvmti_post_field_mod which does the job.
