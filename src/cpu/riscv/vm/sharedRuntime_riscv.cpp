@@ -2958,7 +2958,7 @@ void SharedRuntime::generate_deopt_blob() {
   */
 #else // COMPILER2
   __ unimplemented("deopt blob needed only with compiler");
-  int exception_offset = __ pc() - start;
+//  int exception_offset = __ pc() - start;
 #endif // COMPILER2
   Unimplemented();
   int exception_offset = __ pc() - start;
