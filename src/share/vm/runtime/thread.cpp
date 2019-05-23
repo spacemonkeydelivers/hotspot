@@ -3494,13 +3494,16 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   JvmtiExport::post_vm_start();
 
   {
+    printf("!THREADS\n");
     TraceTime timer("Initialize java.lang classes", TraceStartupTime);
 
     if (EagerXrunInit && Arguments::init_libraries_at_startup()) {
       create_vm_init_libraries();
     }
 
+    printf("%s\n", "Before java_lang_String");
     initialize_class(vmSymbols::java_lang_String(), CHECK_0);
+    printf("%s\n", "After java_lang_String");
 
     // Initialize java_lang.System (needed before creating the thread)
     initialize_class(vmSymbols::java_lang_System(), CHECK_0);
