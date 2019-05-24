@@ -35,6 +35,15 @@
 // on RISCV with its simple addressing mode. Use RegisterOrConstant to
 // represent an offset.
 class Address VALUE_OBJ_CLASS_SPEC {
+ public:
+  enum ScaleFactor {
+    no_scale = -1,
+    times_1  =  0,
+    times_2  =  1,
+    times_4  =  2,
+    times_8  =  3,
+    times_ptr = 3 // TODO: FIX for RV32
+  };
 };
 
 class AddressLiteral VALUE_OBJ_CLASS_SPEC {

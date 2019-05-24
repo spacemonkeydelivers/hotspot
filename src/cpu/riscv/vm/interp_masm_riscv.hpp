@@ -37,6 +37,21 @@ class InterpreterMacroAssembler: public MacroAssembler {
  public:
   InterpreterMacroAssembler(CodeBuffer* code) : MacroAssembler(code) {}
 
+// this ifdef taken fomr src/cpu/x86/vm/interp_masm_x86_64.hpp
+#ifdef CC_INTERP
+  //not needed for now: void save_bcp()                                          { /*  not needed in c++ interpreter and harmless */ }
+  //not needed for now: void restore_bcp()                                       { /*  not needed in c++ interpreter and harmless */ }
+
+  // Helpers for runtime call arguments/results
+  void get_method(Register reg);
+#else
+  void get_method(Register reg) {
+    unimplemented("get method is unimplemented");
+    //movptr(reg, Address(rbp, frame::interpreter_frame_method_offset * wordSize));
+  }
+#endif
+
+
   void null_check_throw(Register a, int offset, Register temp_reg);
 
   void branch_to_entry(address entry, Register Rscratch);
@@ -305,6 +320,7 @@ class InterpreterMacroAssembler: public MacroAssembler {
 
   void restore_prev_state();
 #endif
+
 };
 
 #endif // CPU_RISCV_VM_INTERP_MASM_RISCV_64_HPP

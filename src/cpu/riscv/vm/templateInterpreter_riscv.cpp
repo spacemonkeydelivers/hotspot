@@ -653,7 +653,7 @@ address TemplateInterpreterGenerator::generate_math_entry(AbstractInterpreter::M
 // Interpreter stub for calling a native method. (asm interpreter)
 // This sets up a somewhat different looking stack for calling the
 // native method than the typical interpreter frame setup.
-address InterpreterGenerator::generate_native_entry(bool synchronized) {
+address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // determine code generation flags
   bool inc_counter  = UseCompiler || CountCompiledCalls;
   // Rsender: sender's sp
@@ -676,7 +676,7 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
   Register TMP1 = X28_T3;
 
   __ ld(NUM_ARGS, X23_method, in_bytes(Method::const_offset()));
-  __ lhu(NUM_ARGS, NUM_ARGS, iin_bytes(ConstMethod::size_of_parameters_offset()));   // Fu: 20130814
+  __ lhu(NUM_ARGS, NUM_ARGS, in_bytes(ConstMethod::size_of_parameters_offset()));   // Fu: 20130814
 
   // native calls don't need the stack size check since they have no expression stack
   // and the arguments are already on the stack and we only add a handful of words
@@ -763,10 +763,7 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
   // been entered yet, we set the thread local variable
   // _do_not_unlock_if_synchronized to true. The remove_activation will
   // check this flag.
-#ifndef OPT_THREAD
-  __ get_thread(THREAD);
-#endif
-  __ move(TMP0, XZERO, (int)true);
+  __ addi(TMP0, XZERO, (int)true);
   __ sb(TMP0, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), THREAD);
 
 #if 0
@@ -784,10 +781,6 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
 
   bang_stack_shadow_pages(true);
 
-  // reset the _do_not_unlock_if_synchronized flag
-#ifndef OPT_THREAD
-  __ get_thread(THREAD);
-#endif
   __ sb(XZERO, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), THREAD);
 
   // check for synchronized methods
@@ -853,9 +846,12 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
   //const Register thread = T2;
   const Register t      = TMP0;
 
-  __ get_method(method);
-  __ verify_oop(method);
+  // TODO: we may want to uncomment this if get_method is required elsewhere
+  // NOTE: get_method is not used at the moment
+  // __ get_method(R_method) 
+  __ verify_oop(R_method);
   {
+    // WTF IS GOING ON?! This whole section is a mess, review is needed
     Label L, Lstatic;
     __ ld(TMP0, R_method, in_bytes(Method::const_offset()));
     __ lhu(TMP0, TMP0, in_bytes(ConstMethod::size_of_parameters_offset()));
@@ -867,15 +863,20 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
     __ addi(TMP0, TMP0, 1);
     __ bind(Lstatic);
     __ addi(TMP0, TMP0, -7);
-    __ blez(TMP0, L);
+    // original mips instruction: __ blez(TMP0, L);
+    // was replaced to:
+    // START REPLACEMENT
+    __ beq(TMP0, XZERO, L);
+    __ blt(TMP0, XZERO, L);
+    // END REPLACEMENT
     __ slliw(TMP0, TMP0, Address::times_8);
     __ sub(X2_SP, X2_SP, TMP0);
     __ bind(L);
   }
   // ???
-  __ move(TMP1, -(StackAlignmentInBytes));
-  __ and(SP, SP, TMP1);
-  __ or(TMP1, XZERO, SP);
+  __ addi(TMP1, XZERO, -(StackAlignmentInBytes));
+  __ and_(X2_SP, X2_SP, TMP1);
+  __ or_(TMP1, XZERO, X2_SP);
   // [                          ] <--- sp
   //   ...                        (size of parameters - 8 )
   // [ monitor entry            ]
@@ -1909,7 +1910,7 @@ static int size_activation_helper(int callee_extra_locals, int max_stack,
   // callee_locals and max_stack are counts, not the size in frame.
   const int locals_size =
     round_to(callee_extra_locals * Interpreter::stackElementWords, 
-	     2 * WordsPerLong);
+         2 * WordsPerLong);
 
   // Add one to the expression stack size because Resp always points to the 
   // next available entry, and we prefer not to have it point to the saved FP 
@@ -1919,10 +1920,10 @@ static int size_activation_helper(int callee_extra_locals, int max_stack,
   const int max_stack_words = 
     round_to((max_stack + 1 +
               (ProfileInterpreter ? WordsPerLong : 0)) *
-	     Interpreter::stackElementWords, 2 * WordsPerLong);
+         Interpreter::stackElementWords, 2 * WordsPerLong);
   return (max_stack_words + locals_size + monitor_size +
-	  frame::interpreter_frame_local_words +
-	  frame::frame_min_size);
+      frame::interpreter_frame_local_words +
+      frame::frame_min_size);
 }
 
 // How much stack a method top interpreter activation needs in words. This
