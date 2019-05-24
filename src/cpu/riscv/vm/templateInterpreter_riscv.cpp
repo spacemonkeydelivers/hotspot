@@ -717,7 +717,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif
 
   // initialize fixed part of activation frame
-  generate_fixed_frame(true);
+  generate_fixed_frame(TMP0, TMP1);
   // after this function, the layout of frame is as following
   //
   // [ monitor block top        ] <--- sp ( the top monitor entry )
@@ -779,7 +779,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif // CORE
 #endif // #if 0
 
-  bang_stack_shadow_pages(true);
+  // TODO: implement this method
+  // bang_stack_shadow_pages(true);
 
   __ sb(XZERO, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), THREAD);
 
@@ -787,7 +788,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // Must happen AFTER invocation_counter check and stack overflow check,
   // so method is not locked if overflows.
   if (synchronized) {
-    lock_method();
+    // TODO: implement this method
+    // lock_method(XZERO, TMP0, TMP1, false);
   } else {
     // no synchronization necessary
 #if 0
@@ -839,7 +841,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif // #if 0
 
   // jvmti/jvmpi support
-  __ notify_method_entry();
+  // TODO: implement this method
+  //__ notify_method_entry();
 
   // work registers
   const Register R_method = X23_method;
@@ -1241,6 +1244,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif
 
 #endif // #if 0
+  __ unimplemented(__func__);
   return entry_point;
 }
 

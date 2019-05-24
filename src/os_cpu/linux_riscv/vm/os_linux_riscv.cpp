@@ -402,10 +402,13 @@ JVM_handle_linux_signal(int sig,
 #endif
       // Si_addr may not be valid due to a bug in the linux-ppc64 kernel (see
       // comment below). Use get_stack_bang_address instead of si_addr.
-      address addr = ((NativeInstruction*)pc)->get_stack_bang_address(uc);
+      // address addr = ((NativeInstruction*)pc)->get_stack_bang_address(uc);
+      // TODO: implement get_stack_bang_address
+      address addr = 0;
 
+      // TODO: remove false clause when get_stack_bang_address is implemented
       // Check if fault address is within thread stack.
-      if (addr < thread->stack_base() &&
+      if (false && addr < thread->stack_base() &&
           addr >= thread->stack_base() - thread->stack_size()) {
         // stack overflow
         if (thread->in_stack_yellow_zone(addr)) {
