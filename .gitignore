@@ -2,3 +2,6 @@
 .ptp-sync/
 *.swo
 *.swp
+GRTAGS
+GPATH
+GTAGS

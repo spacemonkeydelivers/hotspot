@@ -1,0 +1,3 @@
+exe 'set path+=' . fnamemodify("./src/share/vm", ":p")
+exe 'set path+=' . fnamemodify("./src/os_cpu/linux_riscv/vm", ":p")
+
