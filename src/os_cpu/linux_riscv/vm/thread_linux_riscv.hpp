@@ -75,4 +75,5 @@
 
   intptr_t* last_interpreter_fp() { return _last_interpreter_fp; }
 
+
 #endif // OS_CPU_LINUX_RISCV_VM_THREAD_LINUX_RISCV_HPP

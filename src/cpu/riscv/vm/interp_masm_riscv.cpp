@@ -36,6 +36,34 @@
 #define BLOCK_COMMENT(str) block_comment(str)
 #endif
 
+void InterpreterMacroAssembler::dbgtrace_gencode_post_impl(Register base,
+                                                           int offset,
+                                                           Register tmp,
+                                                           uint64_t msg_id)
+{
+  li(tmp, (intptr_t)msg_id);
+  sd(tmp, offset, base);
+  bytecode_marker(0xfe);
+}
+void InterpreterMacroAssembler::dbgtrace_gencode_post(Register thread_reg,
+                                                      Register tmp,
+                                                      const char* fmt, ...)
+{
+    char buffer[1024];
+    va_list args;
+
+    va_start (args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end (args);
+
+    uint64_t msg_id =  DebugMailbox::instance().post_message(buffer);
+
+    dbgtrace_gencode_post_impl(thread_reg,
+                               in_bytes(Thread::trace_msg_id_offset()),
+                               tmp,
+                               msg_id);
+}
+
 void InterpreterMacroAssembler::null_check_throw(Register a, int offset, Register temp_reg) {
   unimplemented(__func__);
   /*

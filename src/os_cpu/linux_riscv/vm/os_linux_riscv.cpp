@@ -389,9 +389,16 @@ JVM_handle_linux_signal(int sig,
           }
           */
         } else {
-          if (trace_opcode == 0xff) {
+          switch(trace_opcode) {
+          case 0xff:
             printf("tos = %x\n", uc->uc_mcontext.__gregs[21]);
-          } else {
+          case 0xfe:
+          {
+            uint64_t mail_id = t->traceMailboxExtract();
+            const char* msg = DebugMailbox::instance().get_message(mail_id);
+            printf("\nMAIL has arrived: %s", msg);
+          }
+          default:
             puts(get_opcode_str(trace_opcode));
           }
         }

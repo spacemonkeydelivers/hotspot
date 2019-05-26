@@ -675,6 +675,9 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   Register TMP0 = X7_T2;
   Register TMP1 = X28_T3;
 
+  __ dbgtrace_gencode_post(THREAD, TMP0,
+                           "%s: %s", __PRETTY_FUNCTION__, "Hello Alex!\n");
+
   __ ld(NUM_ARGS, X23_method, in_bytes(Method::const_offset()));
   __ lhu(NUM_ARGS, NUM_ARGS, in_bytes(ConstMethod::size_of_parameters_offset()));   // Fu: 20130814
 

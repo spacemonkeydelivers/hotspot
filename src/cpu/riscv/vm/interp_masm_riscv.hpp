@@ -51,6 +51,12 @@ class InterpreterMacroAssembler: public MacroAssembler {
   }
 #endif
 
+  void dbgtrace_gencode_post_impl(Register base,
+                                  int offset,
+                                  Register tmp,
+                                  uint64_t msg_id);
+  void dbgtrace_gencode_post(Register thread_reg, Register tmp,
+                             const char* fmt, ...);
 
   void null_check_throw(Register a, int offset, Register temp_reg);
 
