@@ -653,6 +653,12 @@ protected:
   static void muxAcquire  (volatile intptr_t * Lock, const char * Name) ;
   static void muxAcquireW (volatile intptr_t * Lock, ParkEvent * ev) ;
   static void muxRelease  (volatile intptr_t * Lock) ;
+
+private:
+  volatile uint64_t _trace_msg_id = 0;
+public:
+  uint64_t traceMailboxExtract() const { return _trace_msg_id; }
+  static ByteSize trace_msg_id_offset() { return byte_offset_of(Thread, _trace_msg_id ); }
 };
 
 // Inline implementation of Thread::current()

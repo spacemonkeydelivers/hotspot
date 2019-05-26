@@ -269,4 +269,18 @@ void pd_obfuscate_location(char *buf, size_t buflen);
 class outputStream;
 void print_native_stack(outputStream* st, frame fr, Thread* t, char* buf, int buf_size);
 
+
+class DebugMailbox {
+public:
+  uint64_t post_message(const char* msg);
+  const char* get_message(uint64_t idx);
+
+  static DebugMailbox& instance();
+
+private:
+  static const int BUFF_SIZE = 1024;
+  int msg_id_ = 0;
+  const char* buff_[BUFF_SIZE] = {};
+};
+
 #endif // SHARE_VM_UTILITIES_DEBUG_HPP

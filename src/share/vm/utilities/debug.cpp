@@ -756,3 +756,37 @@ extern "C" void pns(void* sp, void* fp, void* pc) { // print native stack
 }
 
 #endif // !PRODUCT
+
+DebugMailbox& DebugMailbox::instance()
+{
+    static DebugMailbox instance;
+    return instance;
+}
+
+uint64_t DebugMailbox::post_message(const char* message) {
+
+    const size_t buff_size = strlen(message) + 1;
+    char* dst_buff = (char*)::malloc(buff_size);
+    strncpy(dst_buff, message, buff_size);
+
+    msg_id_ = (msg_id_ + 1) % DebugMailbox::BUFF_SIZE;
+    buff_[msg_id_] = dst_buff;
+
+    // TODO: we need some kind of atomic ops or locks to do bookkeeping.
+    // right now we'll leak like there is no tomorrow.
+    return (uint64_t)dst_buff;
+}
+
+const char* DebugMailbox::get_message(uint64_t idx) {
+    /*
+    if (idx < 0) {
+        return "\nCC-tracer: message box underflow";
+    }
+    if (idx >= DebugMailbox::BUFF_SIZE) {
+        return "\nCC-tracer: message box overflow";
+    }
+    return buff_[idx];
+    */
+    // TODO: we should perform some kind of sanity checking.
+    return (const char*)idx;
+}
