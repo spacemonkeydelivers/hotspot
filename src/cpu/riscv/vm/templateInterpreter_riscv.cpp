@@ -671,12 +671,12 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // the size in the java stack
   Register NUM_ARGS = X5_T0;
   Register JAVA_FP = X6_T1;
-  Register THREAD = X20;
+  Register R_thread = X20;
   Register TMP0 = X7_T2;
   Register TMP1 = X28_T3;
 
-  __ dbgtrace_gencode_post(THREAD, TMP0,
-                           "%s: %s", __PRETTY_FUNCTION__, "Hello Alex!\n");
+  __ dbgtrace_gencode_post(R_thread, TMP0,
+                           "%s: %s pc 0x%llx \n", __PRETTY_FUNCTION__, "generate_native_entry", entry_point);
 
   __ ld(NUM_ARGS, X23_method, in_bytes(Method::const_offset()));
   __ lhu(NUM_ARGS, NUM_ARGS, in_bytes(ConstMethod::size_of_parameters_offset()));   // Fu: 20130814
@@ -767,7 +767,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // _do_not_unlock_if_synchronized to true. The remove_activation will
   // check this flag.
   __ addi(TMP0, XZERO, (int)true);
-  __ sb(TMP0, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), THREAD);
+  __ sb(TMP0, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), R_thread);
 
 #if 0
 #ifndef CORE
@@ -785,7 +785,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // TODO: implement this method
   // bang_stack_shadow_pages(true);
 
-  __ sb(XZERO, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), THREAD);
+  __ sb(XZERO, in_bytes(JavaThread::do_not_unlock_if_synchronized_offset()), R_thread);
 
   // check for synchronized methods
   // Must happen AFTER invocation_counter check and stack overflow check,
@@ -834,9 +834,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #ifdef ASSERT
   {
     Label L;
-    __ ld(AT, FP, frame::interpreter_frame_monitor_block_top_offset * wordSize);
-    __ beq(AT, SP, L);
-    __ delayed()->nop();
+    __ ld(TMP0, X8_FP, frame::interpreter_frame_monitor_block_top_offset * wordSize);
+    __ beq(TMP0, X2_SP, L);
     __ stop("broken stack frame setup in interpreter in asm");
     __ bind(L);
   }
@@ -901,6 +900,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // [ argumnet word n-1        ] <--- ( sender's sp )
   //   ...
   // [ argument word 0          ] <--- LVP
+  
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call", __ pc());
 
   // get signature handler
   {
@@ -909,9 +910,12 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     __ bne(TMP0, XZERO, L);
     __ call_VM(XZERO, CAST_FROM_FN_PTR(address,
                InterpreterRuntime::prepare_native_call), R_method);
-    __ get_method(R_method);
+//    __ get_method(R_method);
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call AFTER CALL", __ pc());
     __ ld(TMP0, R_method, in_bytes(Method::signature_handler_offset()));
+    __ add(XZERO, X5, X5);
     __ bind(L);
+    __ add(XZERO, X6, X6);
   }
 
   // call signature handler
@@ -924,9 +928,9 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 //  assert(InterpreterRuntime::SignatureHandlerGenerator::temp() == t  , "adjust this code");
 
   __ jr(TMP0);
-  __ get_method(R_method);
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call AFTER JR", __ pc());
+//  __ get_method(R_method);
 
-#if 0
 
   //
   // if native function is static, and its second parameter has type length of double word,
@@ -940,7 +944,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 
   // result handler is in V0
   // set result handler
-  __ sd(V0, FP, (frame::interpreter_frame_result_handler_offset)*wordSize);
+  __ sd(X10_RET0, (frame::interpreter_frame_result_handler_offset)*wordSize, X8_FP);
 
 #define FIRSTPARA_SHIFT_COUNT 5
 #define SECONDPARA_SHIFT_COUNT 9
@@ -951,22 +955,21 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   {
     Label L;
     const int mirror_offset = in_bytes(Klass::java_mirror_offset());
-    __ lw(t, method, in_bytes(Method::access_flags_offset()));
-    __ andi(AT, t, JVM_ACC_STATIC);
-    __ beq(AT, R0, L);
-    __ delayed()->nop();
+    __ lw(TMP0, R_method, in_bytes(Method::access_flags_offset()));
+    __ andi(TMP0, TMP0, JVM_ACC_STATIC);
+    __ beq(TMP0, XZERO, L);
 
     // get mirror
-    __ ld(t, method, in_bytes(Method:: const_offset()));
-    __ ld(t, t, in_bytes(ConstMethod::constants_offset())); //??
-    __ ld(t, t, ConstantPool::pool_holder_offset_in_bytes());
-    __ ld(t, t, mirror_offset);
+    __ ld(TMP0, R_method, in_bytes(Method:: const_offset()));
+    __ ld(TMP0, TMP0, in_bytes(ConstMethod::constants_offset())); //??
+    __ ld(TMP0, TMP0, ConstantPool::pool_holder_offset_in_bytes());
+    __ ld(TMP0, TMP0, mirror_offset);
     // copy mirror into activation frame
     //__ sw(t, FP, frame::interpreter_frame_oop_temp_offset * wordSize);
     // pass handle to mirror
-    __ sd(t, FP, frame::interpreter_frame_oop_temp_offset * wordSize);
-    __ daddi(t, FP, frame::interpreter_frame_oop_temp_offset * wordSize);
-    __ move(A1, t);
+    __ sd(TMP0, frame::interpreter_frame_oop_temp_offset * wordSize, X8_FP);
+    __ addi(TMP0, X8_FP, frame::interpreter_frame_oop_temp_offset * wordSize);
+    __ ori(X11_ARG1, TMP0, 0);
     __ bind(L);
   }
 
@@ -990,26 +993,33 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   //   ...
   // [ argument word 0          ] <--- S7
 
+
   // get native function entry point
   { Label L;
-    __ ld(T9, method, in_bytes(Method::native_function_offset()));
-    __ li(V1, SharedRuntime::native_method_throw_unsatisfied_link_error_entry());
-    __ bne(V1, T9, L);
-    __ delayed()->nop();
-    __ call_VM(noreg, CAST_FROM_FN_PTR(address, InterpreterRuntime::prepare_native_call), method);
-    __ get_method(method);
-    __ verify_oop(method);
-    __ ld(T9, method, in_bytes(Method::native_function_offset()));
+    __ ld(TMP0, R_method, in_bytes(Method::native_function_offset()));
+#if 0
+    ExternalAddress unsatisfied(SharedRuntime::native_method_throw_unsatisfied_link_error_entry());
+    __ li(TMP1, unsatisfied);
+#endif
+    __ li(TMP1, 0);
+    __ bne(TMP1, TMP0, L);
+    __ call_VM(XZERO, CAST_FROM_FN_PTR(address, InterpreterRuntime::prepare_native_call), R_method);
+//    __ get_method(R_method);
+    __ verify_oop(R_method);
+    __ ld(TMP1, R_method, in_bytes(Method::native_function_offset()));
     __ bind(L);
   }
 
+
   // pass JNIEnv
   // native function in T9
-#ifndef OPT_THREAD
+#if 0
+#ifndef OPT_R_thread
   __ get_thread(thread);
 #endif
-  __ daddi(t, thread, in_bytes(JavaThread::jni_environment_offset()));
-  __ move(A0, t);
+#endif // #if 0
+  __ addi(TMP0, R_thread, in_bytes(JavaThread::jni_environment_offset()));
+  __ ori(X10_ARG0, TMP0, 0);
   // [ jni environment          ] <--- sp
   // [ mthd holder mirror ptr   ] ---------------------------->| (only for static method)
   // [                          ]                              |
@@ -1032,33 +1042,31 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // [ argument word 0          ] <--- S7
 
   // set_last_Java_frame_before_call
-  __ sd(FP, thread, in_bytes(JavaThread::last_Java_fp_offset()));
+  __ sd(X8_FP, in_bytes(JavaFrameAnchor::last_Java_fp_offset()), R_thread);
   // Change state to native (we save the return address in the thread, since it might not
   // be pushed on the stack when we do a a stack traversal). It is enough that the pc()
   // points into the right code segment. It does not have to be the correct return pc.
-  __ li(t, __ pc());
-  __ sd(t, thread, in_bytes(JavaThread::last_Java_pc_offset()));
-  __ sd(SP, thread, in_bytes(JavaThread::last_Java_sp_offset()));
+  __ li(TMP0, (intptr_t)__ pc());
+  __ sd(TMP0, in_bytes(JavaThread::last_Java_pc_offset()), R_thread);
+  __ sd(X2_SP, in_bytes(JavaThread::last_Java_sp_offset()), R_thread);
 
   // change thread state
 #ifdef ASSERT
   {
     Label L;
-    __ lw(t, thread, in_bytes(JavaThread::thread_state_offset()));
-    __ daddi(t, t, (-1) * _thread_in_Java);
-    __ beq(t, R0, L);
-    __ delayed()->nop();
+    __ lw(TMP0, R_thread, in_bytes(JavaThread::thread_state_offset()));
+    __ addi(TMP0, TMP0, (-1) * _thread_in_Java);
+    __ beq(TMP0, XZERO, L);
     __ stop("Wrong thread state in native stub");
     __ bind(L);
   }
 #endif
 
-  __ move(t, _thread_in_native);
-  __ sw(t, thread, in_bytes(JavaThread::thread_state_offset()));
+  __ ori(TMP0, XZERO, _thread_in_native);
+  __ sw(TMP0, in_bytes(JavaThread::thread_state_offset()), R_thread);
 
   // call native method
-  __ jalr(T9);
-  __ delayed()->nop();
+  __ jr(TMP1);
   // result potentially in V0 or F0
 
 
@@ -1072,11 +1080,13 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   __ push(ltos);
 
   // change thread state
-  __ get_thread(thread);
-  __ move(t, _thread_in_native_trans);
-  __ sw(t, thread, in_bytes(JavaThread::thread_state_offset()));
+//  __ get_thread(thread);
+  __ ori(TMP0, XZERO, _thread_in_native_trans);
+  __ sw(TMP0, in_bytes(JavaThread::thread_state_offset()), R_thread);
 
+#if 0
   if( os::is_MP() ) __ sync(); // Force this write out before the read below
+#endif
 
   // check for safepoint operation in progress and/or pending suspend requests
   { Label Continue;
@@ -1088,68 +1098,62 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     // by hand.
     //
     Label L;
-    __ li(AT, SafepointSynchronize::address_of_state());
-    __ lw(AT, AT, 0);
-    __ bne(AT, R0, L);
-    __ delayed()->nop();
-    __ lw(AT, thread, in_bytes(JavaThread::suspend_flags_offset()));
-    __ beq(AT, R0, Continue);
-    __ delayed()->nop();
+    __ li(TMP1, (intptr_t)SafepointSynchronize::address_of_state());
+    __ lw(TMP1, TMP1, 0);
+    __ bne(TMP1, XZERO, L);
+    __ lw(TMP1, R_thread, in_bytes(JavaThread::suspend_flags_offset()));
+    __ beq(TMP1, XZERO, Continue);
     __ bind(L);
-    __ move(A0, thread);
-    __ call(CAST_FROM_FN_PTR(address, JavaThread::check_special_condition_for_native_trans),
+    __ ori(X10_ARG0, R_thread, 0);
+    __ call_c(CAST_FROM_FN_PTR(address, JavaThread::check_special_condition_for_native_trans),
                              relocInfo::runtime_call_type);
-    __ delayed()->nop();
 
-#ifndef OPT_THREAD
-    __ get_thread(thread);
+#ifndef OPT_R_thread
+//    __ get_thread(thread);
 #endif
     //add for compressedoops
-    __ reinit_heapbase();
+    __ reinit_heapbase(X31_narrowOopBase);
     __ bind(Continue);
   }
 
   // change thread state
-  __ move(t, _thread_in_Java);
-  __ sw(t, thread, in_bytes(JavaThread::thread_state_offset()));
-  __ reset_last_Java_frame(thread, true);
+  __ ori(TMP0, XZERO, _thread_in_Java);
+  __ sw(TMP0, in_bytes(JavaThread::thread_state_offset()), R_thread);
+  __ reset_last_Java_frame();
 
   // reset handle block
-  __ ld(t, thread, in_bytes(JavaThread::active_handles_offset()));
-  __ sw(R0, t, JNIHandleBlock::top_offset_in_bytes());
+  __ ld(TMP0, R_thread, in_bytes(JavaThread::active_handles_offset()));
+  __ sw(XZERO, JNIHandleBlock::top_offset_in_bytes(), R_thread);
 
   // If result was an oop then unbox and save it in the frame
   { Label L;
     Label no_oop, store_result;
     //FIXME, addi only support 16-bit imeditate
-    __ ld(AT, FP, frame::interpreter_frame_result_handler_offset*wordSize);
-    __ li(T0, AbstractInterpreter::result_handler(T_OBJECT));
-    __ bne(AT, T0, no_oop);
-    __ delayed()->nop();
+    __ ld(TMP0, X8_FP, frame::interpreter_frame_result_handler_offset*wordSize);
+    __ li(TMP1, (intptr_t)AbstractInterpreter::result_handler(T_OBJECT));
+    __ bne(TMP1, TMP0, no_oop);
     __ pop(ltos);
-    __ beq(V0, R0, store_result);
-    __ delayed()->nop();
+    __ beq(X10_ARG0, XZERO, store_result);
     // unbox
-    __ ld(V0, V0, 0);
+    __ ld(X10_ARG0, X10_ARG0, 0);
     __ bind(store_result);
-    __ sd(V0, FP, (frame::interpreter_frame_oop_temp_offset)*wordSize);
+    __ sd(X10_ARG0, (frame::interpreter_frame_oop_temp_offset)*wordSize, X8_FP);
     // keep stack depth as expected by pushing oop which will eventually be discarded
     __ push(ltos);
     __ bind(no_oop);
   }
+#if 0
   {
     Label no_reguard;
-    __ lw(t, thread, in_bytes(JavaThread::stack_guard_state_offset()));
-    __ move(AT,(int) JavaThread::stack_guard_yellow_disabled);
-    __ bne(t, AT, no_reguard);
-    __ delayed()->nop();
+    __ lw(TMP0, R_thread, in_bytes(JavaThread::stack_guard_state_offset()));
+    __ ori(TMP1, XZERO, JavaThread::stack_guard_yellow_disabled);
+    __ bne(TMP0, TMP1, no_reguard);
     __ pushad();
-    __ move(S5_heapbase, SP);
-    __ move(AT, -StackAlignmentInBytes);
-    __ andr(SP, SP, AT);
-    __ call(CAST_FROM_FN_PTR(address, SharedRuntime::reguard_yellow_pages), relocInfo::runtime_call_type);
-    __ delayed()->nop();
-    __ move(SP, S5_heapbase);
+    __ ori(S1, X2_SP, 0);
+    __ ori(TMP1, XZERO, -StackAlignmentInBytes);
+    __ and(X2_SP, X2_SP, TMP1);
+    __ call_c(CAST_FROM_FN_PTR(address, SharedRuntime::reguard_yellow_pages), relocInfo::runtime_call_type);
+    __ ori(X2_SP, S1, 0);
     __ popad();
     //add for compressedoops
     __ reinit_heapbase();
@@ -1158,21 +1162,20 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // restore BCP to have legal interpreter frame,
   // i.e., bci == 0 <=> BCP == code_base()
   // Can't call_VM until bcp is within reasonable.
-  __ get_method(method);      // method is junk from thread_in_native to now.
-  __ verify_oop(method);
-  __ ld(BCP, method, in_bytes(Method::const_offset()));
-  __ lea(BCP, Address(BCP, in_bytes(ConstMethod::codes_offset())));
+  __ get_method(R_method);      // method is junk from thread_in_native to now.
+  __ verify_oop(R_method);
+  __ ld(TMP1, R_method, in_bytes(Method::const_offset()));
+  __ lea(TMP1, Address(TMP1, in_bytes(ConstMethod::codes_offset())));
   // handle exceptions (exception handling will handle unlocking!)
   {
     Label L;
-    __ lw(t, thread, in_bytes(Thread::pending_exception_offset()));
-    __ beq(t, R0, L);
-    __ delayed()->nop();
+    __ lw(TMP0, R_thread, in_bytes(Thread::pending_exception_offset()));
+    __ beq(TMP0, XZERO, L);
     // Note: At some point we may want to unify this with the code used in
     // call_VM_base();
     // i.e., we should use the StubRoutines::forward_exception code. For now this
     // doesn't work here because the sp is not correctly set at this point.
-    __ MacroAssembler::call_VM(noreg,
+    __ MacroAssembler::call_VM(XZERO,
                                CAST_FROM_FN_PTR(address,
                                InterpreterRuntime::throw_pending_exception));
     __ should_not_reach_here();

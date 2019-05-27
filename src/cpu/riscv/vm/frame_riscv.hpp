@@ -155,7 +155,7 @@
     frame_fp_offset   = frame_fp_index * wordSize,
     frame_min_size    = 3,
     frame_min_bytes   = frame_min_size * wordSize,
-    frame_elem_size   = wordSize
+    frame_elem_size   = wordSize,
   };
   
   // Unimplemented
@@ -204,6 +204,7 @@
     interpreter_frame_local_words          =  12, // includes frame_min_size
     interpreter_frame_local_words_base_offset = -interpreter_frame_local_words
                                                 * wordSize,
+    interpreter_frame_result_handler_offset          =  3, // for native calls only
 
     // native stub frame needs 2 extra words in outgoing param area
     // for class and jnienv arguments
