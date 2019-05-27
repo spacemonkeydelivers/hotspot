@@ -902,32 +902,31 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   //   ...
   // [ argument word 0          ] <--- LVP
 
-#if 0
   // get signature handler
   {
     Label L;
-    __ ld(T9, method, in_bytes(Method::signature_handler_offset()));
-    __ bne(T9, R0, L);
-    __ delayed()->nop();
-    __ call_VM(NOREG, CAST_FROM_FN_PTR(address,
-               InterpreterRuntime::prepare_native_call), method);
-    __ get_method(method);
-    __ ld(T9, method, in_bytes(Method::signature_handler_offset()));
+    __ ld(TMP0, R_method, in_bytes(Method::signature_handler_offset()));
+    __ bne(TMP0, XZERO, L);
+    __ call_VM(XZERO, CAST_FROM_FN_PTR(address,
+               InterpreterRuntime::prepare_native_call), R_method);
+    __ get_method(R_method);
+    __ ld(TMP0, R_method, in_bytes(Method::signature_handler_offset()));
     __ bind(L);
   }
 
   // call signature handler
   // FIXME: when change codes in InterpreterRuntime, note this point
   // from: begin of parameters
-  assert(InterpreterRuntime::SignatureHandlerGenerator::from() == LVP, "adjust this code");
+//  assert(InterpreterRuntime::SignatureHandlerGenerator::from() == LVP, "adjust this code");
   // to: current sp
-  assert(InterpreterRuntime::SignatureHandlerGenerator::to  () == SP, "adjust this code");
+//  assert(InterpreterRuntime::SignatureHandlerGenerator::to  () == SP, "adjust this code");
   // temp: T3
-  assert(InterpreterRuntime::SignatureHandlerGenerator::temp() == t  , "adjust this code");
+//  assert(InterpreterRuntime::SignatureHandlerGenerator::temp() == t  , "adjust this code");
 
-  __ jalr(T9);
-  __ delayed()->nop();
-  __ get_method(method);
+  __ jr(TMP0);
+  __ get_method(R_method);
+
+#if 0
 
   //
   // if native function is static, and its second parameter has type length of double word,

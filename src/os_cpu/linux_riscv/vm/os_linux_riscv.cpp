@@ -407,54 +407,6 @@ JVM_handle_linux_signal(int sig,
         return true;
       }
 #endif
-      // Si_addr may not be valid due to a bug in the linux-ppc64 kernel (see
-      // comment below). Use get_stack_bang_address instead of si_addr.
-      // address addr = ((NativeInstruction*)pc)->get_stack_bang_address(uc);
-      // TODO: implement get_stack_bang_address
-      address addr = 0;
-
-      // TODO: remove false clause when get_stack_bang_address is implemented
-      // Check if fault address is within thread stack.
-      if (false && addr < thread->stack_base() &&
-          addr >= thread->stack_base() - thread->stack_size()) {
-        // stack overflow
-        if (thread->in_stack_yellow_zone(addr)) {
-          thread->disable_stack_yellow_zone();
-          if (thread->thread_state() == _thread_in_Java) {
-            // Throw a stack overflow exception.
-            // Guard pages will be reenabled while unwinding the stack.
-            stub = SharedRuntime::continuation_for_implicit_exception(thread, pc, SharedRuntime::STACK_OVERFLOW);
-          } else {
-            // Thread was in the vm or native code. Return and try to finish.
-            return 1;
-          }
-        } else if (thread->in_stack_red_zone(addr)) {
-          // Fatal red zone violation.  Disable the guard pages and fall through
-          // to handle_unexpected_exception way down below.
-          thread->disable_stack_red_zone();
-          tty->print_raw_cr("An irrecoverable stack overflow has occurred.");
-
-          // This is a likely cause, but hard to verify. Let's just print
-          // it as a hint.
-          tty->print_raw_cr("Please check if any of your loaded .so files has "
-                            "enabled executable stack (see man page execstack(8))");
-        } else {
-          // Accessing stack address below sp may cause SEGV if current
-          // thread has MAP_GROWSDOWN stack. This should only happen when
-          // current thread was created by user code with MAP_GROWSDOWN flag
-          // and then attached to VM. See notes in os_linux.cpp.
-          if (thread->osthread()->expanding_stack() == 0) {
-             thread->osthread()->set_expanding_stack();
-             if (os::Linux::manually_expand_stack(thread, addr)) {
-               thread->osthread()->clear_expanding_stack();
-               return 1;
-             }
-             thread->osthread()->clear_expanding_stack();
-          } else {
-             fatal("recursive segv. expanding stack.");
-          }
-        }
-      }
     }
 
     if (thread->thread_state() == _thread_in_Java) {
