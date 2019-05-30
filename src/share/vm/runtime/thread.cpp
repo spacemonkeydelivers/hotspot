@@ -3455,8 +3455,14 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
     VMThread::create();
     Thread* vmthread = VMThread::vm_thread();
 
+    if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: creating vm_thread + 1 Thread\n");
+    }
     if (!os::create_thread(vmthread, os::vm_thread))
       vm_exit_during_initialization("Cannot create VM thread. Out of system resources.");
+    if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: behold!\n");
+    }
 
     // Wait for the VM thread to become ready, and VMThread::run to initialize
     // Monitors can have spurious returns, must always check another state flag
@@ -3523,7 +3529,15 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
 
     // The VM preresolves methods to these classes. Make sure that they get initialized
     initialize_class(vmSymbols::java_lang_reflect_Method(), CHECK_0);
+
+    if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: initialize_class(vmSymbols::java_lang_ref_Finalizer + 2 Thread\n");
+    }
     initialize_class(vmSymbols::java_lang_ref_Finalizer(),  CHECK_0);
+    if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: behold!\n");
+    }
+
     call_initializeSystemClass(CHECK_0);
 
     // get the Java runtime name after java.lang.System is initialized
@@ -3620,7 +3634,13 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   JvmtiExport::enter_live_phase();
 
   // Signal Dispatcher needs to be started before VMInit event is posted
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: signal_init + 1 Thread (dispatcher)\n");
+  }
   os::signal_init();
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: behold!\n");
+  }
 
   // Start Attach Listener if +StartAttachListener or it can't be started lazily
   if (!DisableAttachMechanism) {
@@ -3650,7 +3670,13 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
 
   // initialize compiler(s)
 #if defined(COMPILER1) || defined(COMPILER2) || defined(SHARK)
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: CompileBroker::compilation_init + lots Threads (12 compiler threads)\n");
+  }
   CompileBroker::compilation_init();
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: behold!\n");
+  }
 #endif
 
   if (EnableInvokeDynamic) {
@@ -3664,7 +3690,13 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   }
 
 #if INCLUDE_MANAGEMENT
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: Management::initialize + 1 Thread\n");
+  }
   Management::initialize(THREAD);
+  if (CUSTOM_DEBUG_logPthreads) {
+      printf("THREAD_LOG: behold!\n");
+  }
 #endif // INCLUDE_MANAGEMENT
 
   if (HAS_PENDING_EXCEPTION) {
@@ -3704,7 +3736,13 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
       //   aren't, late joiners might appear to start slowly (we might
       //   take a while to process their first tick).
       if (PeriodicTask::num_tasks() > 0) {
+          if (CUSTOM_DEBUG_logPthreads) {
+              printf("THREAD_LOG: WatcherThread::start + 1 Thread\n");
+          }
           WatcherThread::start();
+          if (CUSTOM_DEBUG_logPthreads) {
+              printf("THREAD_LOG: behold!\n");
+          }
       }
   }
 
@@ -3712,6 +3750,7 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
 #ifdef ASSERT
   _vm_complete = true;
 #endif
+  printf("JNI_OK\n");
   return JNI_OK;
 }
 

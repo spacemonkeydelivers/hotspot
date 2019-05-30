@@ -842,6 +842,33 @@ static void *java_start(Thread *thread) {
   return 0;
 }
 
+const char* thr_type2a(os::ThreadType type) {
+  const char* result = "n/a";
+  switch (type) {
+  case os::vm_thread:
+      return "os::vm_thread";
+    break;
+    case os::cgc_thread:
+      return "os::cgc_thread";
+    break;
+    case os::pgc_thread:
+      return "os::pgc_thread";
+    break;
+    case os::java_thread:
+      return "os::java_thread";
+    break;
+    case os::compiler_thread:
+      return "os::compiler_thread";
+    break;
+    case os::watcher_thread:
+      return "os::watcher_thread";
+    break;
+    case os::os_thread:
+      return "os::os_thread";
+    break;
+  }
+  return result;
+}
 bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
   assert(thread->osthread() == NULL, "caller responsible");
 
@@ -911,6 +938,12 @@ bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
     }
 
     pthread_t tid;
+    static unsigned i = 0;
+    if (CUSTOM_DEBUG_logPthreads) {
+        printf("        THREAD_LOG: calling pthread_create #%d: %p (%s)\n",
+               i, thread, thr_type2a(thr_type));
+    }
+    ++i;
     int ret = pthread_create(&tid, &attr, (void* (*)(void*)) java_start, thread);
 
     pthread_attr_destroy(&attr);

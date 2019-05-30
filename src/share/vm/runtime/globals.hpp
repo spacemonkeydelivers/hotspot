@@ -2870,6 +2870,9 @@ class CommandLineFlags {
   diagnostic(bool, PrintSignatureHandlers, false,                           \
           "Print code generated for native method signature handlers")      \
                                                                             \
+  diagnostic(bool, CUSTOM_DEBUG_logPthreads, true,                          \
+          "Print code generated for native method signature handlers")      \
+                                                                            \
   develop(bool, VerifyOops, false,                                          \
           "Do plausibility checks for oops")                                \
                                                                             \

@@ -801,6 +801,7 @@ jint Universe::initialize_heap() {
 
   if (UseParallelGC) {
 #if INCLUDE_ALL_GCS
+    printf("using ParallelScavengeHeap\n");
     Universe::_collectedHeap = new ParallelScavengeHeap();
 #else  // INCLUDE_ALL_GCS
     fatal("UseParallelGC not supported in this VM.");
@@ -840,7 +841,13 @@ jint Universe::initialize_heap() {
 
   ThreadLocalAllocBuffer::set_max_size(Universe::heap()->max_tlab_size());
 
+  if (CUSTOM_DEBUG_logPthreads) {
+    printf("THREAD_LOG: Universe::heap()->initialize() + lots of Threads (12)\n");
+  }
   jint status = Universe::heap()->initialize();
+  if (CUSTOM_DEBUG_logPthreads) {
+    printf("THREAD_LOG: behold!\n");
+  }
   if (status != JNI_OK) {
     return status;
   }
