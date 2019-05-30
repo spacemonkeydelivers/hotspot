@@ -930,7 +930,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // temp: T3
 //  assert(InterpreterRuntime::SignatureHandlerGenerator::temp() == t  , "adjust this code");
 
-  __ jr(TMP0);
+  __ jalr(X1_RA, TMP0, 0);
   __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call AFTER JR", __ pc());
 //  __ get_method(R_method);
 
@@ -1011,6 +1011,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     __ verify_oop(R_method);
     __ ld(TMP1, R_method, in_bytes(Method::native_function_offset()));
     __ bind(L);
+    // Dirty hack
+    __ ld(TMP1, R_method, in_bytes(Method::native_function_offset()));
   }
 
 
@@ -1069,7 +1071,9 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   __ sw(TMP0, in_bytes(JavaThread::thread_state_offset()), R_thread);
 
   // call native method
-  __ jr(TMP1);
+  __ jalr(X1_RA, TMP1, 0);
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " AFTER CALLING NATIVE INIT ", __ pc());
   // result potentially in V0 or F0
 
 
@@ -1252,7 +1256,9 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif
 
 #endif // #if 0
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " BEFORE generate_native_entry UNIMPL ", __ pc());
   __ unimplemented(__func__);
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " AFTER generate_native_entry UNIMPL ", __ pc());
   return entry_point;
 }
 
