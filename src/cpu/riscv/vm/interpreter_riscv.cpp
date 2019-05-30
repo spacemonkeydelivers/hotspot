@@ -83,8 +83,19 @@ int AbstractInterpreter::BasicType_as_index(BasicType type) {
 address AbstractInterpreterGenerator::generate_slow_signature_handler() {
   // TODO: Implement
   address entry = __ pc();
+  /*
+  Register NUM_ARGS = X5_T0;
+  Register JAVA_FP = X6_T1;
+  Register R_thread = X20;
+  Register TMP0 = X7_T2;
+  Register TMP1 = X28_T3;
+  */
 
-  printf("INIT_LOG: generate_slow_signature_handler\n\n");
+  __ dbgtrace_gencode_post(X20, X7_T2,
+                           "%s: %s pc 0x%llx \n", __PRETTY_FUNCTION__,
+                           "generate_slow_signature_handler (before VM_CALL)", entry);
+
+  printf("INIT_LOG: generate_slow_signature_handler (entry = 0x%llx)\n", entry);
 
   __ unimplemented("slow signature handler not implemented");
 

@@ -914,7 +914,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     __ call_VM(XZERO, CAST_FROM_FN_PTR(address,
                InterpreterRuntime::prepare_native_call), R_method);
 //    __ get_method(R_method);
-  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call AFTER CALL", __ pc());
+    __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                             " InterpreterRuntime::prepare_native_call AFTER CALL", __ pc());
     __ ld(TMP0, R_method, in_bytes(Method::signature_handler_offset()));
     __ add(XZERO, X5, X5);
     __ bind(L);
@@ -931,7 +932,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 //  assert(InterpreterRuntime::SignatureHandlerGenerator::temp() == t  , "adjust this code");
 
   __ jalr(X1_RA, TMP0, 0);
-  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call AFTER JR", __ pc());
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " InterpreterRuntime::prepare_native_call AFTER JR", __ pc());
 //  __ get_method(R_method);
 
 
