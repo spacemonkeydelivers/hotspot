@@ -2867,7 +2867,7 @@ class CommandLineFlags {
   develop(bool, PrintBytecodePairHistogram, false,                          \
           "Print histogram of the executed bytecode pairs")                 \
                                                                             \
-  diagnostic(bool, PrintSignatureHandlers, false,                           \
+  diagnostic(bool, PrintSignatureHandlers, true,                            \
           "Print code generated for native method signature handlers")      \
                                                                             \
   diagnostic(bool, CUSTOM_DEBUG_logPthreads, true,                          \
