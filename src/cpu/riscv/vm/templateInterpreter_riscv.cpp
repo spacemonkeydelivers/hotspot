@@ -1149,30 +1149,31 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     __ push(ltos);
     __ bind(no_oop);
   }
-#if 0
   {
     Label no_reguard;
     __ lw(TMP0, R_thread, in_bytes(JavaThread::stack_guard_state_offset()));
     __ ori(TMP1, XZERO, JavaThread::stack_guard_yellow_disabled);
     __ bne(TMP0, TMP1, no_reguard);
-    __ pushad();
-    __ ori(S1, X2_SP, 0);
+//    __ pushad();
+    __ ori(XJUNK, X2_SP, 0);
     __ ori(TMP1, XZERO, -StackAlignmentInBytes);
-    __ and(X2_SP, X2_SP, TMP1);
+    __ and_(X2_SP, X2_SP, TMP1);
     __ call_c(CAST_FROM_FN_PTR(address, SharedRuntime::reguard_yellow_pages), relocInfo::runtime_call_type);
-    __ ori(X2_SP, S1, 0);
-    __ popad();
+    __ ori(X2_SP, XJUNK, 0);
+//    __ popad();
     //add for compressedoops
-    __ reinit_heapbase();
+    __ reinit_heapbase(X31_narrowOopBase);
     __ bind(no_reguard);
   }
   // restore BCP to have legal interpreter frame,
   // i.e., bci == 0 <=> BCP == code_base()
   // Can't call_VM until bcp is within reasonable.
-  __ get_method(R_method);      // method is junk from thread_in_native to now.
+//  __ get_method(R_method);      // method is junk from thread_in_native to now.
   __ verify_oop(R_method);
   __ ld(TMP1, R_method, in_bytes(Method::const_offset()));
-  __ lea(TMP1, Address(TMP1, in_bytes(ConstMethod::codes_offset())));
+  __ ld(TMP1, TMP1, in_bytes(ConstMethod::codes_offset()));
+  // ???
+  __ ori(X18_bcp, TMP1, 0);
   // handle exceptions (exception handling will handle unlocking!)
   {
     Label L;
@@ -1182,19 +1183,18 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     // call_VM_base();
     // i.e., we should use the StubRoutines::forward_exception code. For now this
     // doesn't work here because the sp is not correctly set at this point.
-    __ MacroAssembler::call_VM(XZERO,
-                               CAST_FROM_FN_PTR(address,
-                               InterpreterRuntime::throw_pending_exception));
+    __ call_VM(XZERO,
+               CAST_FROM_FN_PTR(address,
+               InterpreterRuntime::throw_pending_exception));
     __ should_not_reach_here();
     __ bind(L);
   }
-
   // do unlocking if necessary
   {
     Label L;
-    __ lw(t, method, in_bytes(Method::access_flags_offset()));
-    __ andi(t, t, JVM_ACC_SYNCHRONIZED);
-    __ beq(t, R0, L);
+    __ lw(TMP1, R_method, in_bytes(Method::access_flags_offset()));
+    __ andi(TMP1, TMP1, JVM_ACC_SYNCHRONIZED);
+    __ beq(TMP1, XZERO, L);
     // the code below should be shared with interpreter macro assembler implementation
     {
       Label unlock;
@@ -1202,20 +1202,22 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
       // since this is a synchronized method. However, need
       // to check that the object has not been unlocked by
       // an explicit monitorexit bytecode.
-      __ delayed()->daddi(c_rarg0, FP, frame::interpreter_frame_initial_sp_offset * wordSize - (int)sizeof(BasicObjectLock));
+#if 0
+      __ addi(X10_ARG0, X8_FP, frame::interpreter_frame_initial_sp_offset * wordSize - (int)sizeof(BasicObjectLock));
+#endif
+      __ addi(X10_ARG0, X8_FP, -8 * wordSize - (int)sizeof(BasicObjectLock));
       // address of first monitor
 
-      __ ld(t, c_rarg0, BasicObjectLock::obj_offset_in_bytes());
-      __ bne(t, R0, unlock);
-      __ delayed()->nop();
+      __ ld(TMP1, X10_ARG0, BasicObjectLock::obj_offset_in_bytes());
+      __ bne(TMP1, XZERO, unlock);
 
       // Entry already unlocked, need to throw exception
-      __ MacroAssembler::call_VM(NOREG, CAST_FROM_FN_PTR(address,
+      __ call_VM(XZERO, CAST_FROM_FN_PTR(address,
       InterpreterRuntime::throw_illegal_monitor_state_exception));
       __ should_not_reach_here();
 
       __ bind(unlock);
-      __ unlock_object(c_rarg0);
+      __ unlock_object(X10_ARG0);
     }
     __ bind(L);
   }
@@ -1225,7 +1227,7 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   //       the exception handler code notifies the runtime of method exits
   //       too. If this happens before, method entry/exit notifications are
   //       not properly paired (was bug - gri 11/22/99).
-  __ notify_method_exit(false, vtos, InterpreterMacroAssembler::NotifyJVMTI);
+//  __ notify_method_exit(false, vtos, InterpreterMacroAssembler::NotifyJVMTI);
 
   // restore potential result in V0,
   // call result handler to restore potential result in ST0 & handle result
@@ -1233,18 +1235,31 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   __ pop(ltos);
   __ pop(dtos);
 
-  __ ld(t, FP, (frame::interpreter_frame_result_handler_offset) * wordSize);
-  __ jalr(t);
-  __ delayed()->nop();
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " BEFORE FRAME RESULT HANDLER", __ pc());
 
+  __ ld(TMP0, X8_FP, (frame::interpreter_frame_result_handler_offset) * wordSize);
+  __ jalr(X1_RA, TMP0, 0);
+
+  
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " BEFORE REMOVING ACTIVATION ", __ pc());
 
   // remove activation
-  __ ld(SP, FP, frame::interpreter_frame_sender_sp_offset * wordSize); // get sender sp
-  __ ld(RA, FP, frame::interpreter_frame_return_addr_offset * wordSize); // get return address
-  __ ld(FP, FP, frame::interpreter_frame_sender_fp_offset * wordSize); // restore sender's fp
-  __ jr(RA);
-  __ delayed()->nop();
+#if 0
+  __ ld(X2_SP, X8_FP, frame::interpreter_frame_sender_sp_offset * wordSize); // get sender sp
+  __ ld(X1_RA, X8_FP, frame::interpreter_frame_return_addr_offset * wordSize); // get return address
+  __ ld(X8_FP, X8_FP, frame::interpreter_frame_sender_fp_offset * wordSize); // restore sender's fp
+#endif
+  __ ld(X2_SP, X8_FP, -1 * wordSize); // get sender sp
+  __ ld(X1_RA, X8_FP, 1 * wordSize); // get return address
+  __ ld(X8_FP, X8_FP, 0); // restore sender's fp
+  
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " AFTER REMOVING ACTIVATION BEFORE JUMP OUT", __ pc());
+  __ jr(X1_RA);
 
+#if 0
 #ifndef CORE
   if (inc_counter) {
     // Handle overflow of counter and compile method
@@ -1257,8 +1272,6 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 
 #endif // #if 0
   __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " BEFORE generate_native_entry UNIMPL ", __ pc());
-  __ unimplemented(__func__);
-  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " AFTER generate_native_entry UNIMPL ", __ pc());
   return entry_point;
 }
 
