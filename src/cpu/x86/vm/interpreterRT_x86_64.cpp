@@ -488,6 +488,15 @@ IRT_ENTRY(address,
   methodHandle m(thread, (Method*)method);
   assert(m->is_native(), "sanity check");
 
+  { // debug scope
+    ResourceMark rm;
+    // lookup native function entry point if it doesn't exist
+        const char* name = method->name()->as_C_string();
+    const char* kl = method->klass_name()->as_C_string();
+    printf("INIT_LOG: slow_signature_handler for method: %s of class %s | Thread: %p\n", name, kl, thread);
+  }
+
+
   // handle arguments
   SlowSignatureHandler(m, (address)from, to + 1).iterate(UCONST64(-1));
 

@@ -84,6 +84,8 @@ address AbstractInterpreterGenerator::generate_slow_signature_handler() {
   // TODO: Implement
   address entry = __ pc();
 
+  printf("INIT_LOG: generate_slow_signature_handler\n\n");
+
   __ unimplemented("slow signature handler not implemented");
 
   /* TILE CODE but very useful to us, just hard to think about stack frames right now...

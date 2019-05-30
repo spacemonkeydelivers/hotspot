@@ -221,6 +221,15 @@ IRT_ENTRY(address, InterpreterRuntime::slow_signature_handler(
             intptr_t* to ))
   methodHandle m(thread, method);
   assert(m->is_native(), "sanity check");
+
+  { // debug scope
+    ResourceMark rm;
+    // lookup native function entry point if it doesn't exist
+        const char* name = method->name()->as_C_string();
+    const char* kl = method->klass_name()->as_C_string();
+    printf("INIT_LOG: slow_signature_handler for method: %s of class %s | Thread: %p\n", name, kl, thread);
+  }
+
   // On RISCV, the 'to' vector is in 2 segments: The first for the args that
   // go into registers, and the second for the memory args. The latter is the
   // address of the actual stack locations, and its address is passed in the

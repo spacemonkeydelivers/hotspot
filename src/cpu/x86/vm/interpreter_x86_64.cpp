@@ -136,6 +136,7 @@ address AbstractInterpreterGenerator::generate_slow_signature_handler() {
 address AbstractInterpreterGenerator::generate_slow_signature_handler() {
   address entry = __ pc();
 
+  printf("INIT_LOG: generate_slow_signature_handler\n\n");
   // rbx: method
   // r14: pointer to locals
   // c_rarg3: first stack arg - wordSize

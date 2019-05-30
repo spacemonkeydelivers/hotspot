@@ -966,6 +966,7 @@ address InterpreterGenerator::generate_native_entry(bool synchronized) {
 
   // rbx: Method*
   // r13: sender sp
+  printf("INIT_LOG: call generate_native_entry, synchronized = %d\n", synchronized);
 
   address entry_point = __ pc();
 

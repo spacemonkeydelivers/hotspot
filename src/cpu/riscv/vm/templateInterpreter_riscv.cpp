@@ -654,6 +654,9 @@ address TemplateInterpreterGenerator::generate_math_entry(AbstractInterpreter::M
 // This sets up a somewhat different looking stack for calling the
 // native method than the typical interpreter frame setup.
 address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
+
+  printf("INIT_LOG: call generate_native_entry, synchronized = %d\n", synchronized);
+
   // determine code generation flags
   bool inc_counter  = UseCompiler || CountCompiledCalls;
   // Rsender: sender's sp

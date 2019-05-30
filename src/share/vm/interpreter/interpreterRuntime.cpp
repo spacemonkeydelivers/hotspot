@@ -1272,6 +1272,15 @@ address                  SignatureHandlerLibrary::_buffer       = NULL;
 IRT_ENTRY(void, InterpreterRuntime::prepare_native_call(JavaThread* thread, Method* method))
   methodHandle m(thread, method);
   assert(m->is_native(), "sanity check");
+
+  { // debug scope
+    ResourceMark rm;
+    // lookup native function entry point if it doesn't exist
+    const char* name = method->name()->as_C_string();
+    const char* kl = method->klass_name()->as_C_string();
+    printf("INIT_LOG: prepare_native_call for method: %s of class %s | thread = %p\n", name, kl, thread);
+  }
+
   // lookup native function entry point if it doesn't exist
   bool in_base_library;
   if (!m->has_native_function()) {
