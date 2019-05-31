@@ -678,8 +678,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   Register TMP0 = X7_T2;
   Register TMP1 = X28_T3;
 
-  __ dbgtrace_gencode_post(R_thread, TMP0,
-                           "%s: %s pc 0x%llx \n", __PRETTY_FUNCTION__, "generate_native_entry", entry_point);
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx \n",
+                           __PRETTY_FUNCTION__, "generate_native_entry", entry_point);
 
   __ ld(NUM_ARGS, X23_method, in_bytes(Method::const_offset()));
   __ lhu(NUM_ARGS, NUM_ARGS, in_bytes(ConstMethod::size_of_parameters_offset()));   // Fu: 20130814
@@ -1279,18 +1279,18 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // 1388   __ pop(rdi);                               // get return address
   // 1389   __ mov(rsp, t);                            // set sp to sender sp
   //
-  __ ld(X2_SP, X8_FP, -1 * wordSize); // get sender sp
-  __ ld(X1_RA, X8_FP, 1 * wordSize); // get return address
-  __ ld(X8_FP, X8_FP, 0); // restore sender's fp
+  __ ld(X2_SP, X8_FP, -1 * wordSize); // NOTE: (this is not needed, left for debug, values shall be overwritten)
+  __ ld(X1_RA, X8_FP, 1 * wordSize);  // NOTE: (this is not needed, left for debug, values shall be overwritten)
+  // __ ld(X8_FP, X8_FP, 0); // restore sender's fp
 
 // "fixed" code (31/05/2k19)
   // [ locals offset            ]                              |
   // [ sender's sp              ]                              |
   // [ sender's fp              ]                              |
   // [ return address           ] <--- fp                      |
+  __ ld(X1_RA, X8_FP, 0 * wordSize); // get return address
   __ ld(X2_SP, X8_FP, -2 * wordSize); // get sender sp
   __ ld(X8_FP, X8_FP, -1 * wordSize); // restore sender's fp
-  __ ld(X1_RA, X8_FP, 0 * wordSize); // get return address
   
   __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
                            " AFTER REMOVING ACTIVATION BEFORE JUMP OUT", __ pc());
