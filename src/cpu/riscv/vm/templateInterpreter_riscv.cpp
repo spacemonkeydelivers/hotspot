@@ -1288,9 +1288,9 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   // [ sender's sp              ]                              |
   // [ sender's fp              ]                              |
   // [ return address           ] <--- fp                      |
-  __ ld(X1_RA, X8_FP, 0 * wordSize); // get return address
-  __ ld(X2_SP, X8_FP, -2 * wordSize); // get sender sp
-  __ ld(X8_FP, X8_FP, -1 * wordSize); // restore sender's fp
+  __ ld(X1_RA, X8_FP, -1 * wordSize); // get return address
+  __ ld(X2_SP, X8_FP, -3 * wordSize); // get sender sp
+  __ ld(X8_FP, X8_FP, -2 * wordSize); // restore sender's fp
   
   __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
                            " AFTER REMOVING ACTIVATION BEFORE JUMP OUT", __ pc());
