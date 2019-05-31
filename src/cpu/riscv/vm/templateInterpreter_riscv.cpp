@@ -904,7 +904,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   //   ...
   // [ argument word 0          ] <--- LVP
   
-  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " InterpreterRuntime::prepare_native_call", __ pc());
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " InterpreterRuntime::prepare_native_call", __ pc());
 
   // get signature handler
   {
@@ -1167,16 +1168,31 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
     __ reinit_heapbase(X31_narrowOopBase);
     __ bind(no_reguard);
   }
+
+/* Old code of unknown origin (commented out on 31/05/2k19)
   // restore BCP to have legal interpreter frame,
   // i.e., bci == 0 <=> BCP == code_base()
   // Can't call_VM until bcp is within reasonable.
 //  __ get_method(R_method);      // method is junk from thread_in_native to now.
   __ verify_oop(R_method);
   __ ld(TMP1, R_method, in_bytes(Method::const_offset()));
+//__ lea(TMP1, Address(TMP1, in_bytes(ConstMethod::codes_offset())));
   __ ld(TMP1, TMP1, in_bytes(ConstMethod::codes_offset()));
   // ???
   __ ori(X18_bcp, TMP1, 0);
-  // handle exceptions (exception handling will handle unlocking!)
+*/
+
+/* Equivalent x86 code (commented out on 31/05/2k19)
+1312   __ movptr(r13, Address(method, Method::const_offset()));   // get ConstMethod*
+1313   __ lea(r13, Address(r13, ConstMethod::codes_offset()));    // get codebase
+*/
+
+/* Replaced the above sample on (31/05/2k19) */
+  __ verify_oop(R_method);
+  __ ld(TMP1, R_method, in_bytes(Method::const_offset()));
+  __ addi(TMP1, TMP1, in_bytes(ConstMethod::codes_offset()));
+  __ ori(X18_bcp, TMP1, 0);
+
   {
     Label L;
     __ lw(TMP0, R_thread, in_bytes(Thread::pending_exception_offset()));
@@ -1253,9 +1269,28 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
   __ ld(X1_RA, X8_FP, frame::interpreter_frame_return_addr_offset * wordSize); // get return address
   __ ld(X8_FP, X8_FP, frame::interpreter_frame_sender_fp_offset * wordSize); // restore sender's fp
 #endif
+
+  // equivalent x86 code
+  // 1383   // remove activation
+  // 1384   __ movptr(t, Address(rbp,
+  // 1385                        frame::interpreter_frame_sender_sp_offset *
+  // 1386                        wordSize)); // get sender sp
+  // 1387   __ leave();                                // remove frame anchor
+  // 1388   __ pop(rdi);                               // get return address
+  // 1389   __ mov(rsp, t);                            // set sp to sender sp
+  //
   __ ld(X2_SP, X8_FP, -1 * wordSize); // get sender sp
   __ ld(X1_RA, X8_FP, 1 * wordSize); // get return address
   __ ld(X8_FP, X8_FP, 0); // restore sender's fp
+
+// "fixed" code (31/05/2k19)
+  // [ locals offset            ]                              |
+  // [ sender's sp              ]                              |
+  // [ sender's fp              ]                              |
+  // [ return address           ] <--- fp                      |
+  __ ld(X2_SP, X8_FP, -2 * wordSize); // get sender sp
+  __ ld(X8_FP, X8_FP, -1 * wordSize); // restore sender's fp
+  __ ld(X1_RA, X8_FP, 0 * wordSize); // get return address
   
   __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
                            " AFTER REMOVING ACTIVATION BEFORE JUMP OUT", __ pc());
@@ -1273,7 +1308,8 @@ address TemplateInterpreterGenerator::generate_native_entry(bool synchronized) {
 #endif
 
 #endif // #if 0
-  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__, " BEFORE generate_native_entry UNIMPL ", __ pc());
+  __ dbgtrace_gencode_post(R_thread, TMP0, "%s: %s pc 0x%llx\n", __PRETTY_FUNCTION__,
+                           " BEFORE generate_native_entry UNIMPL ", __ pc());
   return entry_point;
 }
 
