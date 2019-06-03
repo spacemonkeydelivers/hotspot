@@ -162,8 +162,7 @@ address TemplateInterpreterGenerator::generate_continuation_for(TosState state) 
 address TemplateInterpreterGenerator::generate_return_entry_for(TosState state, int step, size_t index_size) {
   address entry = __ pc();
 
-  __ unimplemented("generate_return_entry_for");
-  /*
+//  __ unimplemented("generate_return_entry_for");
   // Move the value out of the return register back to the TOS cache of current frame.
   switch (state) {
     case ltos:
@@ -171,26 +170,30 @@ address TemplateInterpreterGenerator::generate_return_entry_for(TosState state, 
     case ctos:
     case stos:
     case atos:
-    case itos: __ mr(X21_tos, X10_RET0); break;   // RET -> TOS cache
+    case itos: __ mv(X21_tos, X10_RET0); break;   // RET -> TOS cache
     case ftos:
-    case dtos: __ fmr(F18_ftos, F10_RET0); break; // TOS cache -> GR_FRET
+    case dtos: __ fmv_d(F18_ftos, F10_RET0); break; // TOS cache -> GR_FRET
     case vtos: break;                           // Nothing to do, this was a void return.
     default  : ShouldNotReachHere();
   }
 
-  __ restore_interpreter_state(R11_scratch1); // Sets R11_scratch1 = fp.
-  __ ld(R12_scratch2, _ijava_state_neg(top_frame_sp), R11_scratch1);
-  __ resize_frame_absolute(R12_scratch2, R11_scratch1, R0);
+  __ restore_interpreter_state(false); // Sets R11_scratch1 = fp.
+  __ mv(X5_T0, X8_FP);
+//  __ ld(X6_T1, _ijava_state_neg(top_frame_sp), X5_T0);
+  __ ld(X6_T1,  frame::interpreter_frame_saved_SP_index * frame::frame_elem_size, X5_T0);
+  __ resize_frame_absolute(X6_T1, X5_T0, X7_T2);
 
   // Compiled code destroys templateTableBase, reload.
   __ load_const(X25_templateTableBase, (address)Interpreter::dispatch_table((TosState)0));
 
+#if 0
   if (state == atos) {
-    __ profile_return_type(R3_RET, R11_scratch1, R12_scratch2);
+    __ profile_return_type(X10_ARG0, X5_T0, X6_T1);
   }
+#endif
 
-  const Register cache = R11_scratch1;
-  const Register size  = R12_scratch2;
+  const Register cache = X5_T0;
+  const Register size  = X6_T1;
   __ get_cache_and_index_at_bcp(cache, 1, index_size);
 
   // Get least significant byte of 64 bit value:
@@ -198,7 +201,7 @@ address TemplateInterpreterGenerator::generate_return_entry_for(TosState state, 
   __ slli(size, size, Interpreter::logStackElementSize);
   __ add(X19_esp, X19_esp, size);
   __ dispatch_next(state, step);
-  */
+
   return entry;
 }
 
