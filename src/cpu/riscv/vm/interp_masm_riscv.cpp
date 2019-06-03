@@ -617,18 +617,12 @@ void InterpreterMacroAssembler::index_check(Register array, Register index, int 
 }
 
 void InterpreterMacroAssembler::get_const(Register Rdst) {
-  unimplemented(__func__);
-  /*
   ld(Rdst, in_bytes(Method::const_offset()), X23_method);
-  */
 }
 
 void InterpreterMacroAssembler::get_constant_pool(Register Rdst) {
-  unimplemented(__func__);
-  /*
   get_const(Rdst);
   ld(Rdst, in_bytes(ConstMethod::constants_offset()), Rdst);
-  */
 }
 
 void InterpreterMacroAssembler::get_constant_pool_cache(Register Rdst) {
