@@ -181,7 +181,12 @@ address TemplateInterpreterGenerator::generate_return_entry_for(TosState state, 
   __ mv(X5_T0, X8_FP);
 //  __ ld(X6_T1, _ijava_state_neg(top_frame_sp), X5_T0);
   __ ld(X6_T1,  frame::interpreter_frame_saved_SP_index * frame::frame_elem_size, X5_T0);
-  __ resize_frame_absolute(X6_T1, X5_T0, X7_T2);
+  
+  __ dbgtrace_gencode_post(X20_thread, X28_T3, "%s: %s pc 0x%llx \n",
+                           __PRETTY_FUNCTION__, "Before resize_frame_abs", __ pc());
+//i  __ resize_frame_absolute(X6_T1, X5_T0, X7_T2);
+  __ ld(X2_SP, -3 * 8, X8_FP);
+  __ sd(XZERO, -3 * 8, X8_FP);
 
   // Compiled code destroys templateTableBase, reload.
   __ load_const(X25_templateTableBase, (address)Interpreter::dispatch_table((TosState)0));
