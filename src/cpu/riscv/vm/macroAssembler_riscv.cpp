@@ -383,21 +383,23 @@ void MacroAssembler::restore_volatile_gprs(Register src, int offset) {
 }
 
 void MacroAssembler::resize_frame(Register offset, Register tmp) {
-  Unimplemented();
-  /*
+#if 0
 #ifdef ASSERT
   assert_different_registers(offset, tmp, X2_SP);
   andi_(tmp, offset, frame::alignment_in_bytes-1);
   asm_assert_eq("resize_frame: unaligned", 0x204);
 #endif
+#endif // #if 0
 
   // tmp <- *(SP)
-  ld(tmp, _abi(callers_sp), X2_SP);
+  ld(tmp, 9 * frame::frame_elem_size, X2_SP);
   // addr <- SP + offset;
+  add(X28_T3, X2_SP, offset);
   // *(addr) <- tmp;
+  sd(tmp, 0, X28_T3);
   // SP <- addr
-  sdux(tmp, X2_SP, offset);
-  */
+  mv(X2_SP, X28_T3);
+//  sdux(tmp, X2_SP, offset);
 }
 
 void MacroAssembler::resize_frame(int offset, Register tmp) {
@@ -413,6 +415,18 @@ void MacroAssembler::resize_frame(int offset, Register tmp) {
   // SP <- addr
   sdu(tmp, offset, X2_SP);
   */
+}
+
+void MacroAssembler::resize_frame_absolute(Register addr, Register tmp1, Register tmp2) {
+  // (addr == tmp1) || (addr == tmp2) is allowed here!
+  assert(tmp1 != tmp2, "must be distinct");
+
+  // compute offset w.r.t. current stack pointer
+  // tmp_1 <- addr - SP (!)
+  sub(tmp1, addr, X2_SP);
+
+  // atomically update SP keeping back link.
+  resize_frame(tmp1/* offset */, tmp2/* tmp */);
 }
 
 void MacroAssembler::push_frame(Register bytes, Register tmp) {
@@ -605,7 +619,7 @@ void MacroAssembler::call_VM_leaf(address entry_point, Register arg_1, Register 
 bool MacroAssembler::is_load_from_polling_page(int instruction, void* ucontext,
                                                address* polling_address_ptr) {
   Unimplemented();
-  /*
+#if 0
   if (!is_ld(instruction))
     return false; // It's not a ld. Fail.
 
@@ -639,8 +653,8 @@ bool MacroAssembler::is_load_from_polling_page(int instruction, void* ucontext,
   ShouldNotReachHere();
   return false;
 #endif
-  */
   return false;
+#endif
 }
 
 bool MacroAssembler::is_memory_serialization(int instruction, JavaThread* thread, void* ucontext) {
@@ -1354,9 +1368,7 @@ int MacroAssembler::instr_size_for_decode_klass_not_null() {
 }
 
 void MacroAssembler::decode_klass_not_null(Register dst, Register src) {
-  Unimplemented();
-  /*
-  assert(dst != X28, "Dst reg may not be X28, as X28 is used here.");
+  assert(dst != X28_T3, "Dst reg may not be X28, as X28 is used here.");
   if (src == noreg) src = dst;
   Register shifted_src = src;
   if (Universe::narrow_klass_shift() != 0 ||
@@ -1366,14 +1378,11 @@ void MacroAssembler::decode_klass_not_null(Register dst, Register src) {
   }
   if (Universe::narrow_klass_base() != 0) {
     load_const(X28, Universe::narrow_klass_base());
-    add(dst, shifted_src, X28);
+    add(dst, shifted_src, X28_T3);
   }
-  */
 }
 
 void MacroAssembler::load_klass(Register dst, Register src) {
-  Unimplemented();
-  /*
   if (UseCompressedClassPointers) {
     lwu(dst, oopDesc::klass_offset_in_bytes(), src);
     // Attention: no null check here!
@@ -1381,7 +1390,6 @@ void MacroAssembler::load_klass(Register dst, Register src) {
   } else {
     ld(dst, oopDesc::klass_offset_in_bytes(), src);
   }
-  */
 }
 
 void MacroAssembler::load_klass_with_trap_null_check(Register dst, Register src) {
