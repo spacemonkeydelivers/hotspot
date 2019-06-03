@@ -366,6 +366,14 @@ JVM_handle_linux_signal(int sig,
 #ifdef ASSERT
       // Check if we trapped here because of a debug trace event
       int trace_opcode;
+      if (*(uint32_t*)pc == 0x100073) { // hack around breakpoint set by gdb
+        printf("\nengaging a workaround for a situation when we have "
+               "breakpoint set on a faulted instructon at %x\n", *(uint32_t*)pc);
+        address next = (address) (((unsigned long)pc) + 4);
+        // In this case, print the next instruction, and jump to it.
+        uc->uc_mcontext.__gregs[REG_PC] = (unsigned long) next;
+        return true;
+      }
       if (((NativeInstruction*)pc)->is_debug_trace_trap(&trace_opcode)) {
         address next = (address) (((unsigned long)pc) + 4);
         if (!trace_opcode) {
