@@ -801,8 +801,9 @@ bool DebugUtils::check_brk(const char* msg) {
   }
   if (strstr(msg, brk_info_)) {
     ++num_triggered_;
+    return true;
   }
-  return true;
+  return false;
 }
 void DebugUtils::print_prompt() {
   printf("ATTENTION: connect the debugger, command is:\n"
