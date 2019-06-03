@@ -68,9 +68,9 @@ inline void MacroAssembler::membar(int bits) {
   */
 }
 
-inline void MacroAssembler::release() { fence(); }
-inline void MacroAssembler::acquire() { fence(); }
-inline void MacroAssembler::fence()   { fence(); }
+inline void MacroAssembler::release() { Assembler::fence(15, 15); }
+inline void MacroAssembler::acquire() { Assembler::fence(15, 15); }
+inline void MacroAssembler::fence()   { Assembler::fence(15, 15); }
 
 #ifdef _LP64
 // Detect narrow oop constants.
