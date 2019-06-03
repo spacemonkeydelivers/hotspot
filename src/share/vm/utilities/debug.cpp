@@ -790,3 +790,25 @@ const char* DebugMailbox::get_message(uint64_t idx) {
   // TODO: we should perform some kind of sanity checking.
   return (const char*)idx;
 }
+DebugUtils& DebugUtils::instance() {
+  static DebugUtils result_;
+  return result_;
+}
+bool DebugUtils::check_brk(const char* msg) {
+  // TODO: we can implement custom logic here if required
+  if (strlen(brk_info_) == 0) {
+    return false;
+  }
+  if (strstr(msg, brk_info_)) {
+    ++num_triggered_;
+  }
+  return true;
+}
+void DebugUtils::print_prompt() {
+  printf("ATTENTION: connect the debugger, command is:\n"
+         "gdb -p %d\n", (int)pid_);
+}
+void DebugUtils::initialize() {
+  os::getenv("DEBUG_BRK", brk_info_, sizeof(brk_info_));
+  pid_ = os::Linux::gettid();
+}

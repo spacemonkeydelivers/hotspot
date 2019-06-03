@@ -283,4 +283,17 @@ private:
   const char* buff_[BUFF_SIZE] = {};
 };
 
+class DebugUtils {
+public:
+  static DebugUtils& instance();
+  bool check_brk(const char* msg);
+  void print_prompt();
+  void initialize();
+private:
+  char brk_info_[1024];
+  int  num_triggered_ = 0;
+  pid_t pid_;
+  bool initialized_ = false;
+};
+
 #endif // SHARE_VM_UTILITIES_DEBUG_HPP

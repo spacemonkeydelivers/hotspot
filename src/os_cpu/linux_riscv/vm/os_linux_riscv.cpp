@@ -302,6 +302,8 @@ const char* get_opcode_str(int opcode) {
   }
 }
 
+volatile bool g_brk_attached = false;
+
 extern "C" JNIEXPORT int
 JVM_handle_linux_signal(int sig,
                         siginfo_t* info,
@@ -406,6 +408,20 @@ JVM_handle_linux_signal(int sig,
             uint64_t mail_id = t->traceMailboxExtract();
             const char* msg = DebugMailbox::instance().get_message(mail_id);
             printf("\nMAIL has arrived: %s", msg);
+
+            DebugUtils& dbg = DebugUtils::instance();
+            if (dbg.check_brk(msg)) {
+              dbg.print_prompt();
+              volatile unsigned counter = 0;
+              while (!g_brk_attached) {
+                if ((counter % 10000) == 0) {
+                  printf("\rwaiting for gdb to attach and do "
+                         "`set variable g_brk_attached = true`... (%u)", counter);
+                  fflush(stdout);
+                }
+                ++counter;
+              }
+            }
             break;
           }
           default:
