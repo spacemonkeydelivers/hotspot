@@ -2286,8 +2286,7 @@ void TemplateTable::fast_binaryswitch() {
 
 void TemplateTable::_return(TosState state) {
   __ bytecode_marker(0xb1);
-  __ unimplemented(__LOCATION__);
-  /*
+//  __ unimplemented(__LOCATION__);
   transition(state, state);
   assert(_desc->calls_vm(),
          "inconsistent calls_vm information"); // call in remove_activation
@@ -2305,18 +2304,23 @@ void TemplateTable::_return(TosState state) {
 
     // Load klass of this obj.
     __ load_klass(Rklass, X21_tos);
-    __ lwz(Rklass_flags, in_bytes(Klass::access_flags_offset()), Rklass);
-    __ testbitdi(CCR0, R0, Rklass_flags, exact_log2(JVM_ACC_HAS_FINALIZER));
-    __ bfalse(CCR0, Lskip_register_finalizer);
+    __ lwu(Rklass_flags, in_bytes(Klass::access_flags_offset()), Rklass);
 
-    __ call_VM(noreg, CAST_FROM_FN_PTR(address, InterpreterRuntime::register_finalizer), X21_tos */ /* obj */ /*);
+    __ andi(Rscratch, Rklass_flags, JVM_ACC_STATIC);
+    __ beq(Rscratch, XZERO, Lskip_register_finalizer);
 
-    __ align(32, 12);
+    __ call_VM(XZERO, CAST_FROM_FN_PTR(address, InterpreterRuntime::register_finalizer), X21_tos /* obj */ );
+
+//    __ align(32, 12);
     __ bind(Lskip_register_finalizer);
   }
 
   // Move the result value into the correct register and remove memory stack frame.
-  __ remove_activation(state, */ /* throw_monitor_exception */ /* true);
+//  __ remove_activation(state,  /* throw_monitor_exception */ true);
+  __ ld(X1_RA, X8_FP, -1 * wordSize); // get return address
+  __ ld(X2_SP, X8_FP, -3 * wordSize); // get sender sp
+  __ ld(X8_FP, X8_FP, -2 * wordSize); // restore sender's fp
+
   // Restoration of lr done by remove_activation.
   switch (state) {
     case ltos:
@@ -2324,16 +2328,16 @@ void TemplateTable::_return(TosState state) {
     case ctos:
     case stos:
     case atos:
-    case itos: __ mr(R3_RET, X21_tos); break;
+    case itos: __ mv(X10_RET0, X21_tos); break;
     case ftos:
-    case dtos: __ fmr(F1_RET, F18_ftos); break;
+    case dtos: __ fmv_d(F10_RET0, F18_ftos); break;
     case vtos: // This might be a constructor. Final fields (and volatile fields on RISCV64) need
                // to get visible before the reference to the object gets stored anywhere.
-               __ membar(Assembler::StoreStore); break;
+//               __ membar(Assembler::StoreStore); break;
+                 break;
     default  : ShouldNotReachHere();
   }
-  __ blr();
-  */
+  __ jr(X1_RA);
 }
 
 // ============================================================================
@@ -3094,7 +3098,7 @@ void TemplateTable::putfield_or_static(int byte_no, bool is_static) {
     __ fence();
   }
   // fallthru: __ b(Lexit);
-
+#if 0
 #ifdef ASSERT
   for (int i = 0; i<number_of_states; ++i) {
     assert(branch_table[i], "put initialization");
@@ -3102,6 +3106,7 @@ void TemplateTable::putfield_or_static(int byte_no, bool is_static) {
     //              is_static ? "static" : "field", i, branch_table[i], *((unsigned int*)branch_table[i]));
   }
 #endif
+#endif // #if 0
 }
 
 void TemplateTable::putfield(int byte_no) {
@@ -3114,8 +3119,7 @@ void TemplateTable::putfield(int byte_no) {
 
 void TemplateTable::putstatic(int byte_no) {
   __ bytecode_marker(0xb3);
-  __ unimplemented(__LOCATION__);
-  //putfield_or_static(byte_no, true);
+  putfield_or_static(byte_no, true);
 }
 
 // See SPARC. On RISCV64, we have a different jvmti_post_field_mod which does the job.
@@ -4038,18 +4042,15 @@ void TemplateTable::newarray() {
 
 void TemplateTable::anewarray() {
   __ bytecode_marker(0xbd);
-  __ unimplemented(__LOCATION__);
-  /*
   transition(itos, atos);
 
-  __ get_constant_pool(R4);
-  __ get_2_byte_integer_at_bcp(1, R5, InterpreterMacroAssembler::Unsigned);
-  __ extsw(R6, X21_tos); // size
-  call_VM(X21_tos, CAST_FROM_FN_PTR(address, InterpreterRuntime::anewarray), R4 */ /* pool */ /*, R5 */ /* index */ /*, R6 */ /* size */ /*);
+  __ get_constant_pool(X27_constPoolCache);
+  __ get_2_byte_integer_at_bcp(1, X7_T2, X5_T0, InterpreterMacroAssembler::Unsigned);
+  __ addw(X6_T1, X21_tos, XZERO);
+  call_VM(X21_tos, CAST_FROM_FN_PTR(address, InterpreterRuntime::anewarray), X27_constPoolCache /* pool */  ,X5_T0 /* index */ , X6_T1 /* size */ );
 
   // Must prevent reordering of stores for object initialization with stores that publish the new object.
-  __ membar(Assembler::StoreStore);
-  */
+//  __ membar(Assembler::StoreStore);
 }
 
 // Allocate a multi dimensional array
